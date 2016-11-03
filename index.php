@@ -1,8 +1,8 @@
 <?php 
 
 /**
- *@aluno1 - Abimael Alcebíades Farias Silva
- *@aluno2 - Fagner Antunes Dorneles
+ *@aluno1 - Abimael Farias Silva
+ *@aluno2 - Fagner Antunes Dornelles
 */
 
 include_once "system.php"; 
