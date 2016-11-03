@@ -1,7 +1,7 @@
 <?php 
 
 /**
- *@aluno1 - Abimael Alcebíades Farias Silva
+ *@aluno1 - Abimael Alcebíades
  *@aluno2 - Fagner Antunes Dorneles
 */
 
