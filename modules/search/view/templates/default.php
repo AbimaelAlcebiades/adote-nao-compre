@@ -2,9 +2,10 @@
 
 // Carrega instância do sistema.
 use TrabalhoG2\System;
-
+$system = new System();
 // Carrega modulo login.
-$login = $GLOBALS["login"];
+$login = $system->getModule("login");
+
 
 ?>
 <nav class="navbar navbar-inverse navbar-static-top">
@@ -20,7 +21,7 @@ $login = $GLOBALS["login"];
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<?php 
-			 	// Tenta realizar a inserção de módulos.
+			 	// Tenta realizar a inserção dos módulos.
 				try {
 					// Renderiza módulo de login.
 					$login->toRender("login", "default");			

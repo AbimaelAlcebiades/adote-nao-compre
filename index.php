@@ -5,15 +5,20 @@
  *@aluno2 - Fagner Antunes Dorneles
 */
 
+// Inclue arquivo principal do sistema.
 include_once "system.php"; 
 
+// Declaração do uso de classes.
 use TrabalhoG2\System;
 
-$system = new System();
+// Inicia o sistema.
+$system = New System();
 
-$navbarModule = $system->getModule("navbar"); 
-$highlighthomeModule = $system->getModule("highlighthome");
-$footerModule = $system->getModule("footer");
+// Carrega módulos.
+$navbarModule 			= $system->getModule("navbar"); 
+$login 					= $system->getModule("login");
+$highlighthomeModule 	= $system->getModule("highlighthome");
+$footerModule 			= $system->getModule("footer");
 
 ?>
 
@@ -22,9 +27,13 @@ $footerModule = $system->getModule("footer");
 <head>
 	<title>Adote, não compre!</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="assets\css\bootstrap.css">
+	<?php /* Carrega arquivos CSS. */ ?>
 	<script src="assets/js/jquery.js"></script>
-	<?php echo $system->loadCSS($highlighthomeModule); ?>
+	<?php echo  $system->loadJavascript("login", "login"); ?>
+	
+	<?php /* Carrega arquivos Javascript. */ ?>
+	<link rel="stylesheet" type="text/css" href="assets\css\bootstrap.css">
+	<?php echo  $system->loadCSS($highlighthomeModule); ?>
 
 </head>
 <body>

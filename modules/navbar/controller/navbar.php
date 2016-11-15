@@ -1,7 +1,9 @@
 <?php
 
+// Define namespace do arquivo.
 namespace TrabalhoG2;
 
+// Declaração do uso de classes.
 use \Exception,
 	TrabalhoG2\ViewNavBar;
 

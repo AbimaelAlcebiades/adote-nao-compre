@@ -104,6 +104,31 @@ class ControllerLogin implements Controller
 		return $this->javascriptFile;
 	}
 
+	public function ajaxLogin($dataPost)
+	{
+		$functionName = $dataPost['data']['functionName'];
+
+		$return = "";
+
+		if($functionName == "toLogin"){
+			$user =  $dataPost['data']['user'];
+			$password =  $dataPost['data']['password'];
+			$return = self::toLogin($user, $password);
+		}
+
+		return $return;
+
+	}
+
+	public function toLogin($user, $password){
+
+		if($user == "teste" && $password == "123"){
+			return "tudo certo";
+		}else{
+			return "nao logou";
+		}
+	}
+
 }
 
 ?>

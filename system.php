@@ -1,18 +1,19 @@
 <?php
 
+// Define namespace do arquivo.
 namespace TrabalhoG2;
 
-// Constantes.
+// Constantes do sistema.
 const ROOT_PATH = __DIR__ . "\\";
 const MODULES_PATH = ROOT_PATH . 'modules' . "\\";
 
-// USAR AUTOLOAD.
-require_once "connection.php";
+//****** USAR AUTOLOAD, (IMPLEMENTAR AUTOLOAD PARA CARREGAR CLASSES).
+require_once "classes" . "\\" . "connection.php";
 require_once "classes" . "\\" . "Usuario.php";
 require_once "classes" . "\\" . "DaoUsuario.php";
 require_once "classes" . "\\" . "Controller.php";
 
-// Adiciona classes a serem utilizadas pelo sistema.
+// Declaração do uso de classes.
 use TrabalhoG2\Connection,
 	TrabalhoG2\Usuario,
 	TrabalhoG2\DaoUsuario,
@@ -20,7 +21,7 @@ use TrabalhoG2\Connection,
 
 
 /**
- * Classe principal que realiza execução do sistema.
+ * Classe principal do sistema.
  */
 class System{
 
@@ -28,9 +29,9 @@ class System{
 	private $connection;
 
 	function __construct(){
-		// Instância uma conexão.
+		// Instância uma conexão com o banco de dados.
 		$connection = new Connection();
-		// Defini uma conexão.
+		// Define uma conexão.
 		$this->connection = $connection->getInstance();
 	}
 	
@@ -59,8 +60,8 @@ class System{
 		$module = $pathModule . $moduleName . "\\" . "controller" . "\\" . $moduleName . '.php';
 
 		if(file_exists($module)){
-			// Realiza a inclusão do arquivo.
-			include $module;
+			// Realiza a inclusão do arquivo, apenas se não existir ainda.
+			include_once $module;
 		}else{
 			// Gera exceção.
 			throw new Exception("Erro ao incluir aquivo controller do módulo " . $moduleName);
@@ -94,16 +95,29 @@ class System{
 
 	/**
 	 * Função que carrega o Javascript do módulo.
-	 * @param Controller $controller Controller que para carregar o Javascript.
+	 * @param string $moduleName Nome do módulo.
+	 * @param string $scriptName Nome do script.
 	 * @return String Retorna código HTML para inserção do script javascript.
 	 */
-	public function loadJavascript(Controller $controller){
+	public function loadJavascript($moduleName, $scriptName){
+
+		$modulo = self::getModule($moduleName);
 		
 		$htmlJavascriptInsert = '<script src=#javascriptPath#></script>';
-		$javascriptPath = $controller->getJavascript();
+		$javascriptPath = $modulo->getJavascript();
 		$htmlJavascriptInsert = str_replace("#javascriptPath#", $javascriptPath, $htmlJavascriptInsert);
 
 		return $htmlJavascriptInsert;
+	}
+
+
+	public function executeAjaxModuleFunction($moduleName){
+
+		$module = self::getModule($moduleName);
+
+		$function = "ajax$moduleName";
+
+		return $module->$function($_POST);
 	}
 }
 ?>

@@ -108,6 +108,23 @@ class DaoUsuario {
         }
     }
 
+    public function buscarUsuarioPorEmail($email) {
+        try {
+            $sql = "SELECT * FROM usuario WHERE email = :email";
+            $p_sql = Conexao::getInstance()->prepare($sql);
+            $p_sql->bindValue(":cod", $cod);
+            $p_sql->execute();
+            return $this->populaUsuario($p_sql->fetch(PDO::FETCH_ASSOC));
+        } catch (Exception $e) {
+            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
+            um LOG do mesmo, tente novamente mais tarde.";
+            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
+                getCode() . " Mensagem: " . $e->getMessage());
+        }
+    }
+
+
+
     private function populaUsuario($row) 
     {
         $pojo = new PojoUsuario;
