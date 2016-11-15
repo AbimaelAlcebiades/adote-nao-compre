@@ -11,7 +11,8 @@ use TrabalhoG2\System;
 
 $system = new System();
 
-$navbarModule = $system->getModule("navbar"); 
+$navbarModule = $system->getModule("navbar");
+$login = $system->getModule("login");
 $userDataModule = $system->getModule("animalData");
 $footerModule = $system->getModule("footer");
 
