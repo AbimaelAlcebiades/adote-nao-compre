@@ -70,7 +70,7 @@ class System{
 		// Pega o nome da classe.
 		$className =  __NAMESPACE__ . "\\" . "Controller" . ucfirst($moduleName);
 
-		// Instância um controller do módulo solicitado.
+		// Instancia um controller do módulo solicitado.
 		$controllerModuleInstance =  new $className();
 
 		// Retorna controller do módulo.
