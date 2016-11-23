@@ -8,13 +8,15 @@ class Usuario {
     private $nome;
     private $email;
     private $senha;
+    private $telefone;
+    private $enderecoCompleto;
 
     public function getId() {
         return $this->id;
     }
 
     public function setId($idUsuario) {
-        $this->id = $id;
+        $this->id = $idUsuario;
     }
 
     public function getNome() {
@@ -40,8 +42,25 @@ class Usuario {
     }
 
     public function setSenha($senha) {
-        $this->senha = strtolower($senha);
-    }    
+        $this->senha = $senha;
+    }
+
+
+    public function getTelefone() {
+        return $this->telefone;
+    }
+
+    public function setTelefone($telefone) {
+        $this->telefone = $telefone;
+    }
+
+    public function getEnderecoCompleto() {
+        return $this->enderecoCompleto;
+    }
+
+    public function setEnderecoCompleto($enderecoCompleto) {
+        $this->enderecoCompleto = $enderecoCompleto;
+    }        
 
 }
 

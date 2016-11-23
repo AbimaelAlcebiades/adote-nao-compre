@@ -28,11 +28,13 @@ $footerModule 			= $system->getModule("footer");
 	<title>Adote, não compre!</title>
 	<meta charset="utf-8">
 	<?php /* Carrega arquivos CSS. */ ?>
-	<script src="assets/js/jquery.js"></script>
-	<?php echo  $system->loadJavascript("login", "login"); ?>
+	<link rel="stylesheet" type="text/css" href="assets\css\bootstrap.css">
 	
 	<?php /* Carrega arquivos Javascript. */ ?>
-	<link rel="stylesheet" type="text/css" href="assets\css\bootstrap.css">
+	<script type="text/javascript" src="assets/js/jquery.js"></script>
+	<script type="text/javascript" src="assets\js\bootstrap.min.js"></script> 
+	<?php echo  $system->loadJavascript("login", "login"); ?>
+	
 	<?php echo  $system->loadCSS($highlighthomeModule); ?>
 
 </head>

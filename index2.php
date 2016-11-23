@@ -13,7 +13,7 @@ $system = new System();
 
 $navbarModule = $system->getModule("navbar");
 $login = $system->getModule("login");
-$userDataModule = $system->getModule("animalData");
+$userDataModule = $system->getModule("userData");
 $footerModule = $system->getModule("footer");
 
 ?>
@@ -33,7 +33,7 @@ $footerModule = $system->getModule("footer");
 		// Tenta realizar a inserção dos módulos.
 		try {
 			$navbarModule->toRender("navbar", "default");			
-			$userDataModule->toRender("animalData", "default");			
+			$userDataModule->toRender("userData", "default");			
 			$footerModule->toRender("footer", "default");
 		// Captura exeções.
 		} catch (Exception $e) {

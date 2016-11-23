@@ -3,7 +3,9 @@
 namespace TrabalhoG2;
 
 //require_once CAMINHO_RAIZ . "admin/conexao.php";
-use TrabalhoG2\Connection;
+use TrabalhoG2\Connection,
+    \PDO,
+    TrabalhoG2\Usuario;
 
 //require_once CAMINHO_RAIZ . "admin/geralog.php";
 //require_once CAMINHO_RAIZ . "admin/entity/perfil/controller_perfil.php";
@@ -12,16 +14,32 @@ use TrabalhoG2\Connection;
 class DaoUsuario {
 
     public static $instance;
+    private $conexao;
 
+    /**
+     * Construtor privado da classe.
+     */
     private function __construct(){
+        // Instância um objeto conexão.
+        $conexao = new Connection();   
 
+        // Pega uma instância de uma conexão.
+        $this->conexao = $conexao->getInstance();
     }
 
+    /**
+     * Função que pega uma instância da classe, implemente padrão de projeto "Singleton".
+     * @return DaoUsuario Retorna uma instância da classe.
+     */
     public static function getInstance(){
-        if (!isset(self::$instance)){
+        
+        // Verifica se já existe uma instância da classe.
+        if(!isset(self::$instance)){
+            // Atribuí a variável uma instância da classe.
             self::$instance = new DaoUsuario();
         }
 
+        // Retorna instância.
         return self::$instance;
     }
 
@@ -33,9 +51,9 @@ class DaoUsuario {
                 VALUES  
                     ( :nome, :email, :senha)";
 
-            $conexao = new Connection();
+            //$conexao = new Connection();
 
-            $p_sql = $conexao->getInstance()->prepare($sql);
+            $p_sql = $this->conexao->getInstance()->prepare($sql);
 
             $p_sql->bindValue(":nome", $usuario->getNome());
             $p_sql->bindValue(":email", $usuario->getEmail());
@@ -108,14 +126,32 @@ class DaoUsuario {
         }
     }
 
-    public function buscarUsuarioPorEmail($email) {
+    public function buscarUsuario($email) {
         try {
-            $sql = "SELECT * FROM usuario WHERE email = :email";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->bindValue(":cod", $cod);
-            $p_sql->execute();
-            return $this->populaUsuario($p_sql->fetch(PDO::FETCH_ASSOC));
+
+            // SQL.
+            $sql = "SELECT * FROM usuarios WHERE email = :email;";
+            
+            // Prepara consulta SQL.
+            $prepareSQL = $this->conexao->prepare($sql);
+            
+            // Insere valores pesquisados.
+            $prepareSQL->bindValue(":email", $email, PDO::PARAM_STR);
+            
+            // Executa SQL.
+            $prepareSQL->execute();
+            
+            // retorna registro encontrado.
+            $registro = $prepareSQL->fetch(PDO::FETCH_ASSOC);
+
+            if($registro){
+                return self::populaUsuario($registro);
+            }else{
+                return false;                
+            }
+
         } catch (Exception $e) {
+            //############################ Corrigir.
             print "Ocorreu um erro ao tentar executar esta ação, foi gerado
             um LOG do mesmo, tente novamente mais tarde.";
             GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
@@ -123,20 +159,17 @@ class DaoUsuario {
         }
     }
 
-
-
-    private function populaUsuario($row) 
+    private function populaUsuario($registro) 
     {
-        $pojo = new PojoUsuario;
-        $pojo->setCod_usuario($row['cod_usuario']);
-        $pojo->setNome($row['nome']);
-        $pojo->setEmail($row['email']);
-        $pojo->setSenha($row['senha']);
-        $pojo->setAtivo($row['ativo']);
-        $pojo->setPerfil(ControllerPerfil::getInstance()->BuscarPorCOD($row['cod_perfil']));
-        return $pojo;
+        $usuario = new Usuario;
+        $usuario->setId($registro['id']);
+        $usuario->setNome($registro['nome']);
+        $usuario->setEmail($registro['email']);
+        $usuario->setSenha($registro['senha']);
+        $usuario->setTelefone($registro['telefone']);
+        $usuario->setEnderecoCompleto($registro['endereco_completo']);
+        return $usuario;
     }
-
 
     public function teste()
     {
