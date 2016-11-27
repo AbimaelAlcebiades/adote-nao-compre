@@ -45,6 +45,11 @@ class ModelUsuario {
         }
     }
 
+    /**
+     * Grava o registro na base independente se ele já existe ou ainda não;
+     * @param usuario $usuario Recebe um objeto Usuario e grava no banco de dados.
+     * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
+     */
     public function inserir(Usuario $usuario) {
         try {
             $sql = "
@@ -68,6 +73,7 @@ class ModelUsuario {
             um LOG do mesmo, tente novamente mais tarde.";
             GeraLog::getInstance()->inserirLog("Erro: Código: " . 
                 $e->getCode() . " Mensagem: " . $e->getMessage());
+            return "";
         }
     }
 
@@ -162,6 +168,80 @@ class ModelUsuario {
         $usuario->setEnderecoCompleto($registro['endereco_completo']);
         $usuario->setAdmin($registro['admin']);
         return $usuario;
+    }
+
+    /**
+     * Recebe e trata execuções de controllers para o módulo.
+     * @param string $dataPost Dados enviados para a controller.
+     * @return mixed Retorno da função solicitada.
+     */
+    public function controllerExecuteLogin($dataPost)
+    {
+        // Pega nome da função que será executada.
+        $functionName = explode(".", $dataPost['task']);
+        $functionName = $functionName[1];
+
+        // Tratamentos para requisições.
+        switch ($functionName) {
+            
+            // Executa createUser.
+            case "createUser":
+                $name = $dataPost['nome'];
+                $user =  $dataPost['email'];
+                $password =  $dataPost['senha'];
+                $templateRedirect = @$dataPost['templateRedirect'];
+
+                self::createUser($name, $user, $password, $templateRedirect);
+                break;
+            
+            // Comportamento padrão.
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Função que cria um usuário.
+     * @param string $name Nome do usuário.
+     * @param string $email Email do usuário(usuário).
+     * @param string $password Senha do usuário.
+     * @return boolean Retorna true se o usuário foi criado com sucesso ou false caso contrario.
+     */
+    public function createUser($name, $email, $password, $templateRedirect = false){
+        $retorno = array();
+
+        // Carrega model.
+        $modelLogin = self::loadModel("login", $this->modelLogin);
+
+        // Veririfica se o usuário já existe no banco de dados.
+        if($modelLogin->buscarUsuario($email)){
+            $retorno["codigo"] = 2;
+            $retorno["mensagem"] = "Este e-mail já esta cadastrado";
+        }else{
+            $usuario =  new Usuario();
+            $usuario->setNome($name);
+            $usuario->setEmail($email);
+            $usuario->setSenha($password);
+
+            // Cria usuário.
+            $resultado = $modelLogin->criarUsuario($usuario);
+
+            if($resultado){
+                $retorno["codigo"] = 1;
+                $retorno["mensagem"] = "Usuário criado com sucesso";
+            }else{
+                $retorno["codigo"] = 0;
+                $retorno["mensagem"] = "Ocorreu um erro ao criar o usuário";
+            }
+        }
+
+        if($templateRedirect){
+            // Retornar template.
+            exit(include "modules/login/view/templates/$templateRedirect.php");
+        }else{
+            return $resultado;
+        }
+
     }
 
 }
