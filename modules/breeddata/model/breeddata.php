@@ -27,6 +27,7 @@ class ModelRaca {
     }
 
     /**
+     * Grava o registro na base independente se ele já existe ou ainda não;
      * @param Raca $raca Recebe um objeto Raca e grava no banco de dados.
      * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
      */

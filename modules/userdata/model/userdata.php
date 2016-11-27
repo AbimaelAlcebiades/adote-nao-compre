@@ -27,6 +27,7 @@ class ModelUsuario {
     }
 
     /**
+     * Grava o registro na base independente se ele já existe ou ainda não;
      * @param usuario $usuario Recebe um objeto Usuario e grava no banco de dados.
      * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
      */
@@ -44,11 +45,10 @@ class ModelUsuario {
         }
     }
 
-
     public function inserir(Usuario $usuario) {
         try {
             $sql = "
-                INSERT INTO usuario 
+                INSERT INTO usuarios 
                     ( nome, email, senha, telefone, endereco_completo, admin) 
                 VALUES  
                     ( :nome, :email, :senha, :telefone, :endereco_completo, :admin)";
@@ -70,25 +70,27 @@ class ModelUsuario {
                 $e->getCode() . " Mensagem: " . $e->getMessage());
         }
     }
-// -FALTA FINALIZAR DAQUI PRA BAIXO \/ \/ \/
+
     public function editar(Usuario $usuario) {
         try {
-            $sql = "UPDATE usuario set
-            nome = :nome,
-            email = :email,
-            senha = :senha,
-            ativo = :ativo,
-            admin = :admin WHERE id = :id";
+            $sql = "UPDATE usuarios set
+            nome = :nome
+            ,email = :email
+            ,senha = :senha
+            ,telefone = :telefone
+            ,endereco_completo = :endereco_completo
+            ,admin = :admin
+            WHERE id = :id";
 
             $p_sql = Conexao::getInstance()->prepare($sql);
 
             $p_sql->bindValue(":nome", $usuario->getNome());
             $p_sql->bindValue(":email", $usuario->getEmail());
             $p_sql->bindValue(":senha", $usuario->getSenha());
-            $p_sql->bindValue(":ativo", $usuario->getAtivo());
-            $p_sql->bindValue(":cod_perfil", $usuario->getPerfil()->
-                getCod_perfil());
-            $p_sql->bindValue(":cod_usuario", $usuario->getCod_usuario());
+            $p_sql->bindValue(":telefone", $usuario->getTelefone());
+            $p_sql->bindValue(":endereco_completo", $usuario->getEnderecoCompleto());
+            $p_sql->bindValue(":admin", $usuario->getAdmin());
+            $p_sql->bindValue(":id", $usuario->getId());
 
             return $p_sql->execute();
         } catch (Exception $e) {
@@ -129,7 +131,7 @@ class ModelUsuario {
         }
     }
 
-    public function buscarTodas() {
+    public function buscarTodos() {
         try {
             $sql = "SELECT * FROM usuarios ";
             $p_sql = Conexao::getInstance()->prepare($sql);
@@ -153,8 +155,12 @@ class ModelUsuario {
     {
         $usuario = new Usuario;
         $usuario->setId($registro['id']);
-        $usuario->setIdEspecie($registro['id_especie']);
         $usuario->setNome($registro['nome']);
+        $usuario->setEmail($registro['email']);
+        $usuario->setSenha($registro['senha']);
+        $usuario->setTelefone($registro['telefone']);
+        $usuario->setEnderecoCompleto($registro['endereco_completo']);
+        $usuario->setAdmin($registro['admin']);
         return $usuario;
     }
 

@@ -5,12 +5,12 @@ namespace TrabalhoG2;
 // Inclue classes necessárias.
 use TrabalhoG2\Connection,
 \PDO,
-TrabalhoG2\Especie;
+TrabalhoG2\Animal;
 
 /**
  * Classe model, realizar interações com o banco de dados.
  */
-class ModelEspecie {
+class ModelAnimal {
 
     //public static $instance;
     private $conexao;
@@ -28,16 +28,16 @@ class ModelEspecie {
 
     /**
      * Grava o registro na base independente se ele já existe ou ainda não;
-     * @param Especie $especie Recebe um objeto Especie e grava no banco de dados.
+     * @param animal $animal Recebe um objeto Animal e grava no banco de dados.
      * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
      */
-    public function gravarEspecie(Especie $especie) {
+    public function gravarAnimal(Animal $animal) {
         try {
 
-            if (isset($especie->getId())
-                return $this->editar($especie);
+            if (isset($animal->getId())
+                return $this->editar($animal);
             else
-                return $this->inserir($especie);
+                return $this->inserir($animal);
             
         } catch (Exception $e) {
             // Retorna se algum erro ocorreu.
@@ -45,20 +45,23 @@ class ModelEspecie {
         }
     }
 
-
-    public function inserir(Especie $especie) {
+    public function inserir(Animal $animal) {
         try {
             $sql = "
-            INSERT INTO especie 
-            ( nome) 
-            VALUES  
-            ( :nome)";
-
-            //$conexao = new Connection();
+                INSERT INTO animais 
+                    ( id_raca, id_usuario, nome, idade, peso, sexo, foto, informacoes, adotado ) 
+                VALUES  
+                    ( :id_raca, :id_usuario, :nome, :idade, :peso, :sexo, :foto, :informacoes, :adotado )";
 
             $p_sql = $this->conexao->getInstance()->prepare($sql);
 
-            $p_sql->bindValue(":nome", $especie->getNome());
+            $p_sql->bindValue(":id_raca", $animal->getIdRaca());
+            $p_sql->bindValue(":id_usuario", $animal->getIdUsuario());
+            $p_sql->bindValue(":nome", $animal->getNome());
+            $p_sql->bindValue(":idade", $animal->getIdade());
+            $p_sql->bindValue(":peso", $animal->getPeso());
+            $p_sql->bindValue(":informacoes", $animal->getInformacoes());
+            $p_sql->bindValue(":adotado", $animal->getAdotado());
 
             return $p_sql->execute();
         } catch (Exception $e) {
@@ -68,17 +71,33 @@ class ModelEspecie {
                 $e->getCode() . " Mensagem: " . $e->getMessage());
         }
     }
-
-    public function editar(Especie $especie) {
+//id_raca, id_usuario, nome, idade, peso, sexo, foto, informacoes, adotado
+    public function editar(Animal $animal) {
         try {
-            $sql = "UPDATE especies set
-            nome = :nome,
+            $sql = "UPDATE animais set
+            ,id_raca = :id_raca
+            ,id_usuario = :id_usuario
+            ,nome = :nome
+            ,idade = :idade
+            ,peso = :peso
+            ,sexo = :sexo
+            ,foto = :foto
+            ,informacoes = :informacoes
+            ,adotado = :adotado
             WHERE id = :id";
 
             $p_sql = Conexao::getInstance()->prepare($sql);
 
-            $p_sql->bindValue(":nome", $especie->getNome());
-            $p_sql->bindValue(":id", $especie->getId());
+            $p_sql->bindValue(":id_raca", $animal->getIdRaca());
+            $p_sql->bindValue(":id_usuario", $animal->getIdUsuario());
+            $p_sql->bindValue(":nome", $animal->getNome());
+            $p_sql->bindValue(":idade", $animal->getIdade());
+            $p_sql->bindValue(":peso", $animal->getPeso());
+            $p_sql->bindValue(":sexo", $animal->getSexo());
+            $p_sql->bindValue(":foto", $animal->getFoto());
+            $p_sql->bindValue(":informacoes", $animal->getInformacoes());
+            $p_sql->bindValue(":adotado", $animal->getAdotado());
+            $p_sql->bindValue(":id", $animal->getId());
 
             return $p_sql->execute();
         } catch (Exception $e) {
@@ -91,7 +110,7 @@ class ModelEspecie {
 
     public function deletar($id) {
         try {
-            $sql = "DELETE FROM especie WHERE id = :id";
+            $sql = "DELETE FROM animais WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
 
@@ -106,11 +125,11 @@ class ModelEspecie {
 
     public function buscarPorId($id) {
         try {
-            $sql = "SELECT * FROM especie WHERE id = :id";
+            $sql = "SELECT * FROM animais WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
             $p_sql->execute();
-            return $this->populaEspecie($p_sql->fetch(PDO::FETCH_ASSOC));
+            return $this->populaAnimal($p_sql->fetch(PDO::FETCH_ASSOC));
         } catch (Exception $e) {
             print "Ocorreu um erro ao tentar executar esta ação, foi gerado
             um LOG do mesmo, tente novamente mais tarde.";
@@ -119,15 +138,15 @@ class ModelEspecie {
         }
     }
 
-    public function buscarTodas() {
+    public function buscarTodos() {
         try {
-            $sql = "SELECT * FROM especie ";
+            $sql = "SELECT * FROM animais ";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->execute();
             
             $lista = array();
             while($row = $p_sql->fetch(PDO::FETCH_ASSOC)) {
-                array_push($lista, $this->populaEspecie($row));
+                array_push($lista, $this->populaAnimal($row));
             }
 
             return $lista;
@@ -139,12 +158,17 @@ class ModelEspecie {
         }
     }
 
-    private function populaEspecie($registro) 
+    private function populaAnimal($registro) 
     {
-        $especie = new Especie;
-        $especie->setId($registro['id']);
-        $especie->setNome($registro['nome']);
-        return $especie;
+        $animal = new Animal;
+        $animal->setId($registro['id']);
+        $animal->setNome($registro['nome']);
+        $animal->setEmail($registro['email']);
+        $animal->setSenha($registro['senha']);
+        $animal->setTelefone($registro['telefone']);
+        $animal->setEnderecoCompleto($registro['endereco_completo']);
+        $animal->setAdmin($registro['admin']);
+        return $animal;
     }
 
 }
