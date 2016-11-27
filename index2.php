@@ -5,16 +5,20 @@
  *@aluno2 - Fagner Antunes Dorneles
 */
 
+// Inclue arquivo principal do sistema.
 include_once "system.php"; 
 
+// Declaração do uso de classes.
 use TrabalhoG2\System;
 
-$system = new System();
+// Inicia o sistema.
+$system = New System();
 
-$navbarModule = $system->getModule("navbar");
-$login = $system->getModule("login");
-$userDataModule = $system->getModule("userData");
-$footerModule = $system->getModule("footer");
+// Carrega módulos.
+$navbarModule 			= $system->getModule("navbar"); 
+$login 					= $system->getModule("login");
+$highlighthomeModule 	= $system->getModule("highlighthome");
+$footerModule 			= $system->getModule("footer");
 
 ?>
 
@@ -23,9 +27,15 @@ $footerModule = $system->getModule("footer");
 <head>
 	<title>Adote, não compre!</title>
 	<meta charset="utf-8">
+	<?php /* Carrega arquivos CSS. */ ?>
 	<link rel="stylesheet" type="text/css" href="assets\css\bootstrap.css">
-	<script src="assets/js/jquery.js"></script>
-	<?php echo $system->loadCSS($userDataModule); ?>
+	
+	<?php /* Carrega arquivos Javascript. */ ?>
+	<script type="text/javascript" src="assets/js/jquery.js"></script>
+	<script type="text/javascript" src="assets\js\bootstrap.min.js"></script> 
+	<?php echo  $system->loadJavascript("login", "login"); ?>
+	
+	<?php echo  $system->loadCSS($highlighthomeModule); ?>
 
 </head>
 <body>
@@ -33,7 +43,7 @@ $footerModule = $system->getModule("footer");
 		// Tenta realizar a inserção dos módulos.
 		try {
 			$navbarModule->toRender("navbar", "default");			
-			$userDataModule->toRender("userData", "default");			
+			$highlighthomeModule->toRender("highlighthome", "default");			
 			$footerModule->toRender("footer", "default");
 		// Captura exeções.
 		} catch (Exception $e) {

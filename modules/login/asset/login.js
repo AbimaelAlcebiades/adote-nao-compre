@@ -1,7 +1,7 @@
 $(document).ready(function(){
     
     // Evento de clique no botão "entrar".
-    $("form.module-login").on("click", "button.enviar-formulario", function(e){
+    $("form.module-nova-especie").on("click", "button.enviar-formulario", function(e){
         
         // Evita comportamento padrão do botão.
         e.preventDefault();
