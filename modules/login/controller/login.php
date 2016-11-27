@@ -4,7 +4,8 @@ namespace TrabalhoG2;
 
 use \Exception,
 	TrabalhoG2\ViewLogin,
-	TrabalhoG2\ModelLogin;
+	TrabalhoG2\ModelLogin,
+	TrabalhoG2\Usuario;
 
 /**
 * Classe controller do módulo login.
@@ -126,6 +127,36 @@ class ControllerLogin implements Controller
 	}
 
 	/**
+	 * Recebe e trata execuções de controllers para o módulo.
+	 * @param string $dataPost Dados enviados para a controller.
+	 * @return mixed Retorno da função solicitada.
+	 */
+	public function controllerExecuteLogin($dataPost)
+	{
+		// Pega nome da função que será executada.
+		$functionName = explode(".", $dataPost['task']);
+		$functionName = $functionName[1];
+
+		// Tratamentos para requisições.
+		switch ($functionName) {
+			
+			// Executa createUser.
+			case "createUser":
+			 	$name = $dataPost['nome'];
+			 	$user =  $dataPost['email'];
+			 	$password =  $dataPost['senha'];
+			 	$templateRedirect = @$dataPost['templateRedirect'];
+
+			 	self::createUser($name, $user, $password, $templateRedirect);
+			 	break;
+			
+			// Comportamento padrão.
+			default:
+				break;
+		}
+	}
+
+	/**
 	 * Recebe e trata requisições ajax para o módulo.
 	 * @param string $dataPost Dados enviados via requisição.
 	 * @return mixed Retorno da função solicitada.
@@ -151,6 +182,20 @@ class ControllerLogin implements Controller
 			// Função "toExit".
 			case "toExit":
 				$return = self::toExit();
+				break;
+
+			// Função "creatUser".
+			// case "createUser":
+			// 	$name = $dataPost['data']['name'];
+			// 	$user =  $dataPost['data']['user'];
+			// 	$password =  $dataPost['data']['password'];
+			// 	$return = self::createUser($name, $user, $password);
+			// 	break;
+
+			// Função "verifyUserExists".
+			case "verifyUserExists":
+				$email = $dataPost['data']['email'];
+				$return = self::verifyUserExists($email);
 				break;
 			
 			// Comportamento padrão.
@@ -226,11 +271,14 @@ class ControllerLogin implements Controller
 		// Criptografa a senha.
 		$password = md5($password);
 
-		// Pega DAO do usuário.
-		$daoUsuario = DaoUsuario::getInstance();
+		// // Pega DAO do usuário.
+		// $daoUsuario = DaoUsuario::getInstance();
 
-		// Tenta buscar um usuário.
-		$usuario = $daoUsuario->buscarUsuario($user);
+		// Carrega model.
+		$modelLogin = self::loadModel("login", $this->modelLogin);
+
+		// Pega usuário.
+		$usuario = $modelLogin->buscarUsuario($user);
 
 		// Verifica se foi encontrado um usuário.
 		if($usuario){
@@ -300,6 +348,69 @@ class ControllerLogin implements Controller
 
 		return $viewModuleInstance;
 	}
+
+	/**
+	 * Função que cria um usuário.
+	 * @param string $name Nome do usuário.
+	 * @param string $email Email do usuário(usuário).
+	 * @param string $password Senha do usuário.
+	 * @return boolean Retorna true se o usuário foi criado com sucesso ou false caso contrario.
+	 */
+	public function createUser($name, $email, $password, $templateRedirect = false){
+		$retorno = array();
+
+		// Carrega model.
+		$modelLogin = self::loadModel("login", $this->modelLogin);
+
+		// Veririfica se o usuário já existe no banco de dados.
+		if($modelLogin->buscarUsuario($email)){
+			$retorno["codigo"] = 2;
+			$retorno["mensagem"] = "Este e-mail já esta cadastrado";
+		}else{
+			$usuario =  new Usuario();
+			$usuario->setNome($name);
+			$usuario->setEmail($email);
+			$usuario->setSenha($password);
+
+			// Cria usuário.
+			$resultado = $modelLogin->criarUsuario($usuario);
+
+			if($resultado){
+				$retorno["codigo"] = 1;
+				$retorno["mensagem"] = "Usuário criado com sucesso";
+			}else{
+				$retorno["codigo"] = 0;
+				$retorno["mensagem"] = "Ocorreu um erro ao criar o usuário";
+			}
+		}
+
+		if($templateRedirect){
+			// Retornar template.
+			exit(include "modules/login/view/templates/$templateRedirect.php");
+		}else{
+			return $resultado;
+		}
+
+	}
+
+	/**
+	 * Função que verifica se um usuário já existe.
+	 * @param string $email Email do usuário(usuário).
+	 * @return boolean Retorna true se o usuário já existe ou caso ainda não exista.
+	 */
+	public function verifyUserExists($email){
+
+		// Carrega model.
+		$modelLogin = self::loadModel("login", $this->modelLogin);
+
+		if($modelLogin->buscarUsuario($email)){
+			exit(true);
+		}else{
+			exit(false);
+		}
+
+	}
+
 
 }
 

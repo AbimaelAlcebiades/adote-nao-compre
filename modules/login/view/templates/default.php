@@ -7,6 +7,6 @@
 	</div>
 	<button type="submit" class="btn btn-success enviar-formulario">Entrar</button>
 	<div class="form-group">
-	<a href="#">Registrar-se »</a>
+	<a href="modules/login/view/templates/register.php">Registrar-se »</a>
 	</div>
 </form>

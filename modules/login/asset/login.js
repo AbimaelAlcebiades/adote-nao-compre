@@ -33,7 +33,6 @@ $(document).ready(function(){
           data: data
         },
         function(data,status){
-            alert("Data: " + data + "\nStatus: " + status);
             location.reload();
         });
     });
@@ -63,7 +62,6 @@ $(document).ready(function(){
           data: data
         },
         function(data,status){
-            alert("Data: " + data + "\nStatus: " + status);
             location.reload();
         });
     });

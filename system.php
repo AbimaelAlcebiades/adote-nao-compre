@@ -119,5 +119,15 @@ class System{
 
 		return $module->$function($_POST);
 	}
+
+
+	public function executeControllerModule($moduleName){
+
+		$module = self::getModule($moduleName);
+
+		$function = "controllerExecute$moduleName";
+
+		return $module->$function($_POST);
+	}
 }
 ?>

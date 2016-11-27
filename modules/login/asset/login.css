@@ -3,3 +3,9 @@ form.module-login.form-login{
     max-width: 330px;
     padding: 100px 10px;
 }
+
+
+form.form-register{
+	width: 600px;
+	margin: auto;
+}

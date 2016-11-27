@@ -35,19 +35,17 @@ class ModelLogin {
         try {
             $sql = "
                 INSERT INTO usuarios 
-                    ( nome, email, senha, telefone, endereco_completo) 
+                    ( nome, email, senha) 
                 VALUES  
-                    ( :nome, :email, :senha, :telefone, :endereco_completo)";
+                    ( :nome, :email, :senha)";
 
             // Trata consulta SQL.
-            $preparaSQL = $this->conexao->getInstance()->prepare($sql);
+            $preparaSQL = $this->conexao->prepare($sql);
 
             // Realiza "bind"(substituição) dos valores.
             $preparaSQL->bindValue(":nome", $usuario->getNome());
             $preparaSQL->bindValue(":email", $usuario->getEmail());
-            $preparaSQL->bindValue(":senha", $usuario->getSenha());
-            $preparaSQL->bindValue(":nome", $usuario->getTelefone());
-            $preparaSQL->bindValue(":email", $usuario->getEnderecoCompleto());
+            $preparaSQL->bindValue(":senha", md5($usuario->getSenha()));
 
             // Realiza execução do SQL.
             $resultado = $preparaSQL->execute();

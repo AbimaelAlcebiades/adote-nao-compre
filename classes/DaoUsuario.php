@@ -171,10 +171,6 @@ class DaoUsuario {
         return $usuario;
     }
 
-    public function teste()
-    {
-        echo "master of PHP";
-    }
 }
 
 ?>
