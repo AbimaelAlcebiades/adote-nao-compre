@@ -2,24 +2,23 @@
 
 namespace TrabalhoG2;
 
-//require_once CAMINHO_RAIZ . "admin/conexao.php";
+// Inclue classes necessárias.
 use TrabalhoG2\Connection,
-    \PDO,
-    TrabalhoG2\Especie;
+\PDO,
+TrabalhoG2\Usuario;
 
-//require_once CAMINHO_RAIZ . "admin/geralog.php";
-//require_once CAMINHO_RAIZ . "admin/entity/perfil/controller_perfil.php";
-//require_once "pojo_usuario.php";
+/**
+ * Classe model, realizar interações com o banco de dados.
+ */
+class ModelUsuario {
 
-class DaoEspecie {
-
-    public static $instance;
+    //public static $instance;
     private $conexao;
 
     /**
-     * Construtor privado da classe.
+     * Construtor da classe.
      */
-    private function __construct(){
+    function __construct(){
         // Instância um objeto conexão.
         $conexao = new Connection();   
 
@@ -28,34 +27,40 @@ class DaoEspecie {
     }
 
     /**
-     * Função que pega uma instância da classe, implemente padrão de projeto "Singleton".
-     * @return DaoUsuario Retorna uma instância da classe.
+     * @param usuario $usuario Recebe um objeto Usuario e grava no banco de dados.
+     * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
      */
-    public static function getInstance(){
-        
-        // Verifica se já existe uma instância da classe.
-        if(!isset(self::$instance)){
-            // Atribuí a variável uma instância da classe.
-            self::$instance = new DaoEspecie();
-        }
+    public function gravarUsuario(Usuario $usuario) {
+        try {
 
-        // Retorna instância.
-        return self::$instance;
+            if (isset($usuario->getId())
+                return $this->editar($usuario);
+            else
+                return $this->inserir($usuario);
+            
+        } catch (Exception $e) {
+            // Retorna se algum erro ocorreu.
+            return  "Erro: Código: " . $e->getCode() . " Mensagem: " . $e->getMessage();
+        }
     }
 
-    public function inserir(Especie $especie) {
+
+    public function inserir(Usuario $usuario) {
         try {
             $sql = "
-                INSERT INTO especie 
-                    ( nome) 
+                INSERT INTO usuario 
+                    ( nome, email, senha, telefone, endereco_completo, admin) 
                 VALUES  
-                    ( :nome)";
-
-            //$conexao = new Connection();
+                    ( :nome, :email, :senha, :telefone, :endereco_completo, :admin)";
 
             $p_sql = $this->conexao->getInstance()->prepare($sql);
 
-            $p_sql->bindValue(":nome", $especie->getNome());
+            $p_sql->bindValue(":nome", $usuario->getNome());
+            $p_sql->bindValue(":email", $usuario->getEmail());
+            $p_sql->bindValue(":senha", $usuario->getSenha());
+            $p_sql->bindValue(":telefone", $usuario->getTelefone());
+            $p_sql->bindValue(":endereco_completo", $usuario->getEnderecoCompleto());
+            $p_sql->bindValue(":admin", $usuario->getAdmin());
 
             return $p_sql->execute();
         } catch (Exception $e) {
@@ -65,17 +70,25 @@ class DaoEspecie {
                 $e->getCode() . " Mensagem: " . $e->getMessage());
         }
     }
-
-    public function editar(Especie $especie) {
+// -FALTA FINALIZAR DAQUI PRA BAIXO \/ \/ \/
+    public function editar(Usuario $usuario) {
         try {
-            $sql = "UPDATE especie set
+            $sql = "UPDATE usuario set
             nome = :nome,
-            WHERE id = :id";
+            email = :email,
+            senha = :senha,
+            ativo = :ativo,
+            admin = :admin WHERE id = :id";
 
             $p_sql = Conexao::getInstance()->prepare($sql);
 
-            $p_sql->bindValue(":nome", $especie->getNome());
-            $p_sql->bindValue(":id", $especie->getId());
+            $p_sql->bindValue(":nome", $usuario->getNome());
+            $p_sql->bindValue(":email", $usuario->getEmail());
+            $p_sql->bindValue(":senha", $usuario->getSenha());
+            $p_sql->bindValue(":ativo", $usuario->getAtivo());
+            $p_sql->bindValue(":cod_perfil", $usuario->getPerfil()->
+                getCod_perfil());
+            $p_sql->bindValue(":cod_usuario", $usuario->getCod_usuario());
 
             return $p_sql->execute();
         } catch (Exception $e) {
@@ -88,7 +101,7 @@ class DaoEspecie {
 
     public function deletar($id) {
         try {
-            $sql = "DELETE FROM especie WHERE id = :id";
+            $sql = "DELETE FROM usuarios WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
 
@@ -103,11 +116,11 @@ class DaoEspecie {
 
     public function buscarPorId($id) {
         try {
-            $sql = "SELECT * FROM especie WHERE id = :id";
+            $sql = "SELECT * FROM usuarios WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
             $p_sql->execute();
-            return $this->populaEspecie($p_sql->fetch(PDO::FETCH_ASSOC));
+            return $this->populaUsuario($p_sql->fetch(PDO::FETCH_ASSOC));
         } catch (Exception $e) {
             print "Ocorreu um erro ao tentar executar esta ação, foi gerado
             um LOG do mesmo, tente novamente mais tarde.";
@@ -118,13 +131,13 @@ class DaoEspecie {
 
     public function buscarTodas() {
         try {
-            $sql = "SELECT * FROM especie ";
+            $sql = "SELECT * FROM usuarios ";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->execute();
             
             $lista = array();
             while($row = $p_sql->fetch(PDO::FETCH_ASSOC)) {
-                array_push($lista, $this->populaEspecie($row));
+                array_push($lista, $this->populaUsuario($row));
             }
 
             return $lista;
@@ -136,12 +149,13 @@ class DaoEspecie {
         }
     }
 
-    private function populaEspecie($registro) 
+    private function populaUsuario($registro) 
     {
-        $especie = new Especie;
-        $especie->setId($registro['id']);
-        $especie->setNome($registro['nome']);
-        return $especie;
+        $usuario = new Usuario;
+        $usuario->setId($registro['id']);
+        $usuario->setIdEspecie($registro['id_especie']);
+        $usuario->setNome($registro['nome']);
+        return $usuario;
     }
 
 }

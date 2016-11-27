@@ -2,16 +2,16 @@
   <!-- Exibição com 3 destaques -->
   
   <h3>Nova Espécie</h3>
-  <form class="form-inline" action="/user/extras/" method="post" enctype="multipart/form-data">
+  <form class="form-inline module-nova-especie" action="/user/extras/" method="POST" enctype="multipart/form-data">
 
-    <label>Nome: </label> <input class="form-control" id="id_nome" maxlength="100" name="nome" type="text" required />
+    <label>Nome: </label> <input class="form-control nome" maxlength="100" type="text" required />
 
-    <button type="submit" class="btn btn-primary" id="btn_save">
+    <button type="submit" class="btn btn-primary enviar-formulario" id="btn_save">
       <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true">&nbsp;</span>Salvar
     </button>
 
     <a href="/user/profile/" class="btn btn-danger" role="button">
-      <span class="glyphicon glyphicon-remove-circle" aria-hidden="true">&nbsp;</span>Cancelar
+      <span class="glyphicon glyphicon-remove-circle cancelar" aria-hidden="true">&nbsp;</span>Cancelar
     </a>
 
   </form>

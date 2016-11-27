@@ -5,12 +5,12 @@ namespace TrabalhoG2;
 // Inclue classes necessárias.
 use TrabalhoG2\Connection,
 \PDO,
-TrabalhoG2\Especie;
+TrabalhoG2\Raca;
 
 /**
  * Classe model, realizar interações com o banco de dados.
  */
-class ModelEspecie {
+class ModelRaca {
 
     //public static $instance;
     private $conexao;
@@ -27,16 +27,16 @@ class ModelEspecie {
     }
 
     /**
-     * @param Especie $especie Recebe um objeto Especie e grava no banco de dados.
+     * @param Raca $raca Recebe um objeto Raca e grava no banco de dados.
      * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
      */
-    public function gravarEspecie(Especie $especie) {
+    public function gravarRaca(Raca $raca) {
         try {
 
-            if (isset($especie->getId())
-                return $this->editar($especie);
+            if (isset($raca->getId())
+                return $this->editar($raca);
             else
-                return $this->inserir($especie);
+                return $this->inserir($raca);
             
         } catch (Exception $e) {
             // Retorna se algum erro ocorreu.
@@ -45,19 +45,20 @@ class ModelEspecie {
     }
 
 
-    public function inserir(Especie $especie) {
+    public function inserir(Raca $raca) {
         try {
             $sql = "
-            INSERT INTO especie 
-            ( nome) 
+            INSERT INTO racas
+            ( nome, id_especie ) 
             VALUES  
-            ( :nome)";
+            ( :nome, :id_especie )";
 
             //$conexao = new Connection();
 
             $p_sql = $this->conexao->getInstance()->prepare($sql);
 
-            $p_sql->bindValue(":nome", $especie->getNome());
+            $p_sql->bindValue(":nome", $raca->getNome());
+            $p_sql->bindValue(":id_especie", $raca->getIdEspecie());
 
             return $p_sql->execute();
         } catch (Exception $e) {
@@ -68,16 +69,18 @@ class ModelEspecie {
         }
     }
 
-    public function editar(Especie $especie) {
+    public function editar(Raca $raca) {
         try {
-            $sql = "UPDATE especies set
-            nome = :nome,
+            $sql = "UPDATE racas set
+            nome = :nome
+            ,id_especie = :id_especie
             WHERE id = :id";
 
             $p_sql = Conexao::getInstance()->prepare($sql);
 
-            $p_sql->bindValue(":nome", $especie->getNome());
-            $p_sql->bindValue(":id", $especie->getId());
+            $p_sql->bindValue(":nome", $raca->getNome());
+            $p_sql->bindValue(":id_especie", $raca->getIdEspecie());
+            $p_sql->bindValue(":id", $raca->getId());
 
             return $p_sql->execute();
         } catch (Exception $e) {
@@ -90,7 +93,7 @@ class ModelEspecie {
 
     public function deletar($id) {
         try {
-            $sql = "DELETE FROM especie WHERE id = :id";
+            $sql = "DELETE FROM racas WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
 
@@ -105,11 +108,11 @@ class ModelEspecie {
 
     public function buscarPorId($id) {
         try {
-            $sql = "SELECT * FROM especie WHERE id = :id";
+            $sql = "SELECT * FROM racas WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
             $p_sql->execute();
-            return $this->populaEspecie($p_sql->fetch(PDO::FETCH_ASSOC));
+            return $this->populaRaca($p_sql->fetch(PDO::FETCH_ASSOC));
         } catch (Exception $e) {
             print "Ocorreu um erro ao tentar executar esta ação, foi gerado
             um LOG do mesmo, tente novamente mais tarde.";
@@ -120,13 +123,13 @@ class ModelEspecie {
 
     public function buscarTodas() {
         try {
-            $sql = "SELECT * FROM especie ";
+            $sql = "SELECT * FROM racas ";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->execute();
             
             $lista = array();
             while($row = $p_sql->fetch(PDO::FETCH_ASSOC)) {
-                array_push($lista, $this->populaEspecie($row));
+                array_push($lista, $this->populaRaca($row));
             }
 
             return $lista;
@@ -138,12 +141,13 @@ class ModelEspecie {
         }
     }
 
-    private function populaEspecie($registro) 
+    private function populaRaca($registro) 
     {
-        $especie = new Especie;
-        $especie->setId($registro['id']);
-        $especie->setNome($registro['nome']);
-        return $especie;
+        $raca = new Raca;
+        $raca->setId($registro['id']);
+        $raca->setIdEspecie($registro['id_especie']);
+        $raca->setNome($registro['nome']);
+        return $raca;
     }
 
 }
