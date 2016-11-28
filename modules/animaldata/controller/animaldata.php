@@ -104,6 +104,89 @@ class ControllerAnimalData implements Controller
 		return $this->cssFile;
 	}
 
+	/**
+     * Recebe e trata execuções de controllers para o módulo.
+     * @param string $dataPost Dados enviados para a controller.
+     * @return mixed Retorno da função solicitada.
+     */
+    public function controllerExecuteAnimalData($dataPost)
+    {
+        // Pega nome da função que será executada.
+        $functionName = explode(".", $dataPost['task']);
+        $functionName = $functionName[1];
+
+        // Tratamentos para requisições.
+        switch ($functionName) {
+            //id_raca, id_usuario, nome, idade, peso, sexo, foto, informacoes, adotado
+            // Executa createAnimalData.
+            case "createAnimalData":
+                $id = $dataPost['id'];
+                $id_raca = $dataPost['id_raca'];
+                $id_usuario = $dataPost['id_usuario'];
+                $nome = $dataPost['nome'];
+                $idade = $dataPost['idade'];
+                $peso = $dataPost['peso'];
+                $sexo = $dataPost['sexo'];
+                $foto = $dataPost['foto'];
+                $informacoes = $dataPost['informacoes'];
+                $adotado = $dataPost['adotado'];
+
+                $templateRedirect = @$dataPost['templateRedirect'];
+
+                self::createAnimal($id, $id_raca, $id_usuario, $nome, $idade, $peso, $sexo, $foto, $informacoes, $adotado, $templateRedirect);
+                break;
+            
+            // Comportamento padrão.
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Função que grava o usuário.
+     * @param string $name Nome do usuário.
+     * @param string $email Email do usuário(usuário).
+     * @param string $password Senha do usuário.
+     * @return boolean Retorna true se o usuário foi criado com sucesso ou false caso contrario.
+     */
+    public function createAnimal($id, $id_raca, $id_usuario, $nome, $idade, $peso, $sexo, $foto, $informacoes, $adotado, $templateRedirect = false){
+        $retorno = array();
+
+        // Carrega model.
+        $model = self::loadModel("animaldata", $this->model);
+
+        $animal =  new Animal();
+		$animal->setId($id);
+		$animal->setIdRaca($id_raca);
+		$animal->setIdUsuario($id_usuario);
+        $animal->setNome($nome);
+        $animal->setIdade($idade);
+        $animal->setPeso($peso);
+        $animal->setSexo($sexo);
+        $animal->setFoto($foto);
+        $animal->setInformacoes($informacoes);
+        $animal->setAdotado($adotado);
+
+        // grava raça no banco de dados.
+        $resultado = $model->gravarAnimal($animal);
+
+        if($resultado){
+            $retorno["codigo"] = 1;
+            $retorno["mensagem"] = "Dados salvos com sucesso";
+        }else{
+            $retorno["codigo"] = 0;
+            $retorno["mensagem"] = "Ocorreu um erro ao salvar o usuário";
+        }
+
+        if($templateRedirect){
+            // Retornar template.
+            exit(include "modules/login/view/templates/$templateRedirect.php");
+        }else{
+            return $resultado;
+        }
+
+    }
+
 }
 
 ?>

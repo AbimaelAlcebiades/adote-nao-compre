@@ -149,7 +149,7 @@ class ControllerUserData implements Controller
         $retorno = array();
 
         // Carrega model.
-        $modelUserData = self::loadModel("userdata", $this->model);
+        $model = self::loadModel("userdata", $this->model);
 
     
         $usuario =  new Usuario();
