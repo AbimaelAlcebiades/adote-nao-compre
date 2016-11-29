@@ -4,8 +4,11 @@ form.module-login.form-login{
     padding: 100px 10px;
 }
 
-
 form.form-register{
 	width: 600px;
 	margin: auto;
+}
+
+input.invalid{
+	border: 2px solid red;
 }

@@ -66,13 +66,13 @@ $footerModule 			= $system->getModule("footer");
 
 				<div class="col-sm-2"></div>
 				<div class="form-group">
-				<button type="submit" class="btn btn-primary" id="btn_save">
-					<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true">&nbsp;</span>Salvar
-				</button>
-				
-				<a href="..\..\..\..\index.php" class="btn btn-danger" role="button">
-					<span class="glyphicon glyphicon-remove-circle" aria-hidden="true">&nbsp;</span>Cancelar
-				</a>                    
+					<button type="submit" class="btn btn-primary" id="btn_save">
+						<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true">&nbsp;</span>Salvar
+					</button>
+					
+					<a href="..\..\..\..\index.php" class="btn btn-danger" role="button">
+						<span class="glyphicon glyphicon-remove-circle" aria-hidden="true">&nbsp;</span>Cancelar
+					</a>                    
 				</div>
 
 				<input class="hidden" id="task" name="task" type="text" value="login.createUser">    

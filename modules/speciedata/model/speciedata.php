@@ -10,7 +10,7 @@ TrabalhoG2\Especie;
 /**
  * Classe model, realizar interações com o banco de dados.
  */
-class ModelEspecie {
+class ModelSpecieData {
 
     //public static $instance;
     private $conexao;
@@ -34,10 +34,11 @@ class ModelEspecie {
     public function gravarEspecie(Especie $especie) {
         try {
 
-            if (isset($especie->getId())
+            if ( !is_null($especie->getId()) ){
                 return $this->editar($especie);
-            else
+            } else {
                 return $this->inserir($especie);
+            }
             
         } catch (Exception $e) {
             // Retorna se algum erro ocorreu.
@@ -49,23 +50,20 @@ class ModelEspecie {
     public function inserir(Especie $especie) {
         try {
             $sql = "
-            INSERT INTO especie 
+            INSERT INTO especies 
             ( nome) 
             VALUES  
             ( :nome)";
 
-            //$conexao = new Connection();
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
 
-            $p_sql = $this->conexao->getInstance()->prepare($sql);
+            $preparaSQL->bindValue(":nome", $especie->getNome());
 
-            $p_sql->bindValue(":nome", $especie->getNome());
-
-            return $p_sql->execute();
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . 
-                $e->getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
@@ -82,25 +80,25 @@ class ModelEspecie {
 
             return $p_sql->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
     public function deletar($id) {
         try {
-            $sql = "DELETE FROM especie WHERE id = :id";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->bindValue(":id", $id);
+            $sql = "DELETE FROM especies WHERE id = :id";
+            //$p_sql = Conexao::getInstance()->prepare($sql);
 
-            return $p_sql->execute();
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->bindValue(":id", $id);
+
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+           print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
@@ -121,21 +119,22 @@ class ModelEspecie {
 
     public function buscarTodas() {
         try {
-            $sql = "SELECT * FROM especie ";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->execute();
+            $sql = "SELECT * FROM especies ";
+
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->execute();
             
             $lista = array();
-            while($row = $p_sql->fetch(PDO::FETCH_ASSOC)) {
+            while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
                 array_push($lista, $this->populaEspecie($row));
             }
 
             return $lista;
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 

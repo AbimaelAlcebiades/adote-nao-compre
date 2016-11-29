@@ -10,8 +10,10 @@ const MODULES_PATH = ROOT_PATH . 'modules' . "\\";
 //****** USAR AUTOLOAD, (IMPLEMENTAR AUTOLOAD PARA CARREGAR CLASSES).
 require_once "classes" . "\\" . "connection.php";
 require_once "tables" . "\\" . "Usuario.php";
+require_once "tables" . "\\" . "Especie.php";
 require_once "classes" . "\\" . "DaoUsuario.php";
 require_once "classes" . "\\" . "Controller.php";
+require_once "classes" . "\\" . "View.php";
 
 // Declaração do uso de classes.
 use TrabalhoG2\Connection,

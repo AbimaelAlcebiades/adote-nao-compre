@@ -147,11 +147,8 @@ class ModelLogin {
             }
 
         } catch (Exception $e) {
-            //############################ Corrigir.
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
@@ -167,6 +164,37 @@ class ModelLogin {
         return $usuario;
     }
 
+     /**
+     * Função para que verifica se um usuário é administrador.
+     * @param string $email Email do usuário a verificar
+     * @return boolean Retorna true se é admin ou false se não é.
+     */
+    public function verificaAdmin($email) {
+        try {
+
+            // SQL.
+            $sql = "SELECT * FROM usuarios WHERE email = :email;";
+            
+            // Prepara consulta SQL.
+            $prepareSQL = $this->conexao->prepare($sql);
+            
+            // Insere valores pesquisados.
+            $prepareSQL->bindValue(":email", $email, PDO::PARAM_STR);
+            
+            // Executa SQL.
+            $prepareSQL->execute();
+            
+            // retorna registro encontrado.
+            $registro = $prepareSQL->fetch(PDO::FETCH_ASSOC);
+
+            return $registro["admin"];
+
+        } catch (Exception $e) {
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
+            
+        }
+    }
 }
 
 ?>
