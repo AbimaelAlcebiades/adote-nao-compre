@@ -17,7 +17,7 @@ $system = New System();
 // Carrega módulos.
 $navbarModule 			= $system->getModule("navbar"); 
 $login 					= $system->getModule("login");
-$highlighthomeModule 	= $system->getModule("highlighthome");
+$highlighthomeModule 	= $system->getModule("userdata");
 $footerModule 			= $system->getModule("footer");
 
 ?>
@@ -43,7 +43,7 @@ $footerModule 			= $system->getModule("footer");
 		// Tenta realizar a inserção dos módulos.
 		try {
 			$navbarModule->toRender("navbar", "default");			
-			$highlighthomeModule->toRender("highlighthome", "default");			
+			$highlighthomeModule->toRender("userdata", "default");			
 			$footerModule->toRender("footer", "default");
 		// Captura exeções.
 		} catch (Exception $e) {

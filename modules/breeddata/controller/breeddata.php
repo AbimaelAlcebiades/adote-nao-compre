@@ -104,6 +104,75 @@ class ControllerBreedData implements Controller
 		return $this->cssFile;
 	}
 
+	/**
+     * Recebe e trata execuções de controllers para o módulo.
+     * @param string $dataPost Dados enviados para a controller.
+     * @return mixed Retorno da função solicitada.
+     */
+    public function controllerExecuteBreedData($dataPost)
+    {
+        // Pega nome da função que será executada.
+        $functionName = explode(".", $dataPost['task']);
+        $functionName = $functionName[1];
+
+        // Tratamentos para requisições.
+        switch ($functionName) {
+            
+            // Executa createBreedData.
+            case "createBreedData":
+                $id = $dataPost['id'];
+                $id_especie = $dataPost['id_especie'];
+                $nome = $dataPost['nome'];
+
+                $templateRedirect = @$dataPost['templateRedirect'];
+
+                self::createBreed($id, $id_especie, $nome, $templateRedirect);
+                break;
+            
+            // Comportamento padrão.
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Função que grava o usuário.
+     * @param string $name Nome do usuário.
+     * @param string $email Email do usuário(usuário).
+     * @param string $password Senha do usuário.
+     * @return boolean Retorna true se o usuário foi criado com sucesso ou false caso contrario.
+     */
+    public function createBreed($id, $id_especie, $nome, $templateRedirect = false){
+        $retorno = array();
+
+        // Carrega model.
+        $model = self::loadModel("userdata", $this->model);
+
+        $raca =  new Raca();
+		$raca->setId($id);
+		$raca->setIdEspecie($id_especie);
+        $raca->setNome($nome);
+
+        // grava raça no banco de dados.
+        $resultado = $model->gravarRaca($raca);
+
+        if($resultado){
+            $retorno["codigo"] = 1;
+            $retorno["mensagem"] = "Dados salvos com sucesso";
+        }else{
+            $retorno["codigo"] = 0;
+            $retorno["mensagem"] = "Ocorreu um erro ao salvar o usuário";
+        }
+
+        if($templateRedirect){
+            // Retornar template.
+            exit(include "modules/login/view/templates/$templateRedirect.php");
+        }else{
+            return $resultado;
+        }
+
+    }
+
 }
 
 ?>

@@ -45,6 +45,11 @@ class ModelUsuario {
         }
     }
 
+    /**
+     * Grava o registro na base independente se ele já existe ou ainda não;
+     * @param usuario $usuario Recebe um objeto Usuario e grava no banco de dados.
+     * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
+     */
     public function inserir(Usuario $usuario) {
         try {
             $sql = "
@@ -68,6 +73,7 @@ class ModelUsuario {
             um LOG do mesmo, tente novamente mais tarde.";
             GeraLog::getInstance()->inserirLog("Erro: Código: " . 
                 $e->getCode() . " Mensagem: " . $e->getMessage());
+            return "";
         }
     }
 

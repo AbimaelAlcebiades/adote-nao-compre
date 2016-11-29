@@ -26,11 +26,11 @@
     </select></p>
     
     <label>Idade</label>
-    <p><input class="form-control" id="id_Idade" name="Idade" type="number" /></p>
+    <p><input class="form-control" id="id_Idade" name="Idade" type="number" min="0" max="30" /></p>
     
     
     <label>Peso</label>
-    <p><input class="form-control" id="id_Peso" name="Peso" step="any" type="number" required /></p>
+    <p><input class="form-control" id="id_Peso" name="Peso" step="any" type="number" min="0" required /></p>
     
     <label>Sexo</label>
     <p><select class="form-control" id="id_Sexo" name="Sexo" required>

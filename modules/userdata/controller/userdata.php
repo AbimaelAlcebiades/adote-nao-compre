@@ -104,6 +104,82 @@ class ControllerUserData implements Controller
 		return $this->cssFile;
 	}
 
+	/**
+     * Recebe e trata execuções de controllers para o módulo.
+     * @param string $dataPost Dados enviados para a controller.
+     * @return mixed Retorno da função solicitada.
+     */
+    public function controllerExecuteUserData($dataPost)
+    {
+        // Pega nome da função que será executada.
+        $functionName = explode(".", $dataPost['task']);
+        $functionName = $functionName[1];
+
+        // Tratamentos para requisições.
+        switch ($functionName) {
+            
+            // Executa createUser.
+            case "createUserData":
+                $id = $dataPost['id'];
+                $nome = $dataPost['nome'];
+                $email =  $dataPost['email'];
+                $senha =  $dataPost['senha'];
+                $telefone =  $dataPost['telefone'];
+                $endereco_completo = $dataPost['endereco_completo'];
+
+                $templateRedirect = @$dataPost['templateRedirect'];
+
+                self::createUser($id, $nome, $email, $senha, $telefone, $endereco_completo, $templateRedirect);
+                break;
+            
+            // Comportamento padrão.
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Função que grava o usuário.
+     * @param string $name Nome do usuário.
+     * @param string $email Email do usuário(usuário).
+     * @param string $password Senha do usuário.
+     * @return boolean Retorna true se o usuário foi criado com sucesso ou false caso contrario.
+     */
+    public function createUser($id, $nome, $email, $senha, $telefone, $endereco_completo, $templateRedirect = false){
+        $retorno = array();
+
+        // Carrega model.
+        $model = self::loadModel("userdata", $this->model);
+
+    
+        $usuario =  new Usuario();
+		$usuario->setId($id);
+        $usuario->setNome($nome);
+        $usuario->setEmail($email);
+        $usuario->setSenha($senha);
+        $usuario->setTelefone($telefone);
+        $usuario->setEnderecoCompleto($endereco_completo);
+
+        // grava usuário no banco de dados.
+        $resultado = $model->gravarUsuario($usuario);
+
+        if($resultado){
+            $retorno["codigo"] = 1;
+            $retorno["mensagem"] = "Dados salvos com sucesso";
+        }else{
+            $retorno["codigo"] = 0;
+            $retorno["mensagem"] = "Ocorreu um erro ao salvar o usuário";
+        }
+
+        if($templateRedirect){
+            // Retornar template.
+            exit(include "modules/login/view/templates/$templateRedirect.php");
+        }else{
+            return $resultado;
+        }
+
+    }
+
 }
 
 ?>
