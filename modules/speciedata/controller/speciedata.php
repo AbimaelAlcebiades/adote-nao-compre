@@ -184,8 +184,15 @@ class ControllerSpecieData implements Controller
 			// Executa createUser.
 			case "registerSpecie":
 			 	$specieName = $dataPost['data']['specieName'];
-			 	
-			 	self::registerSpecie($specieName);
+			 	$specieId = $dataPost['data']['specieId'];
+			 
+			 	if($specieId == "0"){
+			 		// Novo registro.
+			 		self::registerSpecie($specieName);
+			 	}else{
+			 		// Update de registro.
+			 		self::updateSpecie($specieName, $specieId);
+			 	}
 			 	break;
 
 			// Executa createUser.
@@ -224,6 +231,26 @@ class ControllerSpecieData implements Controller
 		$especie->setNome($specieName);
 
 		$modelSpecieData->inserir($especie);
+	}
+
+	/**
+	 * Função que altera uma especie.
+	 * @param string $specieName Nome da especie.
+	 * @param int $specieId Id da especie.
+	 * @return boolean Retorna true se a especie foi atualizada ou false caso contrario.
+	 */
+	public function updateSpecie($specieName, $specieId){
+		$retorno = array();
+
+		// Carrega model.
+		$modelSpecieData = self::loadModel("speciedata", $this->modelSpecieData);
+
+		$especie = new Especie();
+		$especie->setNome($specieName);
+		$especie->setId($specieId);
+		
+		$modelSpecieData->editar($especie);
+
 	}
 
 	/**

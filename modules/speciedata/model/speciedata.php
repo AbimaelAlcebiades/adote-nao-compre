@@ -70,15 +70,17 @@ class ModelSpecieData {
     public function editar(Especie $especie) {
         try {
             $sql = "UPDATE especies set
-            nome = :nome,
+            nome = :nome
             WHERE id = :id";
 
-            $p_sql = Conexao::getInstance()->prepare($sql);
+            $preparaSQL = $this->conexao->prepare($sql);
 
-            $p_sql->bindValue(":nome", $especie->getNome());
-            $p_sql->bindValue(":id", $especie->getId());
+           // exit(var_dump((int)$especie->getId()));
 
-            return $p_sql->execute();
+            $preparaSQL->bindValue(":nome", $especie->getNome(), PDO::PARAM_STR);
+            $preparaSQL->bindValue(":id", (int)$especie->getId(), PDO::PARAM_INT);
+
+            return $preparaSQL->execute();
         } catch (Exception $e) {
             print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
             . $e->getCode() . " Mensagem: " . $e->getMessage();

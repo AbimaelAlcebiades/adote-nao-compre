@@ -37,7 +37,8 @@ $footerModule       = $system->getModule("footer");
     $navbarModule->toRender("navbar", "raw"); ?>
 
     <div class="container module-speciedata">
-      <h3>Nova Espécie</h3>
+      <h3 class="titulo_cadastro">Nova Espécie</h3>
+      <h3 class="titulo_edicao hidden">Editar Espécie</h3>
       <form class="form-horizontal form-speciedata" id="form-register" action="" method="POST">                    
         <div class="form-group row">
           <label for="nome_especie" class="col-sm-2 control-label">Nome<sup>*</sup></label>
@@ -50,7 +51,7 @@ $footerModule       = $system->getModule("footer");
           <button type="submit" class="btn btn-primary enviar-formulario" id="btn_save">
             <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true">&nbsp;</span>Salvar
           </button>
-          <a href="..\..\..\..\index.php" class="btn btn-danger" role="button">
+          <a href="..\..\..\..\index.php" class="btn btn-danger btn-cancel" role="button">
             <span class="glyphicon glyphicon-remove-circle cancelar" aria-hidden="true">&nbsp;</span>Cancelar
           </a>                   
         </div>

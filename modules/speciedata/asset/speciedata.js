@@ -22,14 +22,49 @@ $(document).ready(function(){
         }
     });
 
+    // Evento de clique no botão "cancelar".
+    $(".btn-cancel").on("click", function(e){
+        // Evita comportamento padrão do botão.
+        e.preventDefault();
+
+        $("#nome_especie").val("");
+
+        $(".titulo_cadastro").removeClass("hidden");
+        $(".titulo_edicao").addClass('hidden');
+
+        liberaTodosBotoes();
+    });
+
      // Evento de clique no botão "excluir".
     $("div.listagem-especies").on("click", "a.excluir-especie", function(e){
         // Evita comportamento padrão do botão.
         e.preventDefault();
 
         var botao = $(this);
+        if(botao.attr("disabled") == "disabled"){
+            return
+        }else{
+            excluirEspecie(botao);
+        }
+    });
 
-        excluirEspecie(botao);
+    // Evento de clique no botão "alterar".
+    $("div.listagem-especies").on("click", ".alterar-especie", function(e){
+        // Evita comportamento padrão do botão.
+        e.preventDefault();
+
+        $("#nome_especie").val($(this).parent().prev().text());
+        $("#nome_especie").attr("data-id-especie", $(this).attr("data-id"));
+
+        $(this).attr("disabled", "disabled");
+        $(this).next().attr("disabled", "disabled");
+
+        $("#btn_save").addClass('specie-edit');
+        $(".btn-cancel").addClass('specie-edit');
+
+        $(".titulo_cadastro").addClass("hidden");
+        $(".titulo_edicao").removeClass('hidden');
+
     });
 
     // Evento de foco no campo nome_especie.
@@ -41,6 +76,12 @@ $(document).ready(function(){
 
 
 });
+
+function liberaTodosBotoes() {
+    $(".btn").each(function( i ) {
+            $(this).removeAttr('disabled');
+    });
+}
 
 /* Função que valida se um campo é vazio. */
 function validateEmptyField(id){
@@ -75,12 +116,22 @@ function cadastraEspecie(inputSpecieName){
 
     var form = inputSpecieName.closest("form.form-speciedata");
     var botao = form.find(".enviar-formulario");
+    var specieId = 0;
+    var editMode = $(".enviar-formulario");
+
+    if(editMode.hasClass('specie-edit')){
+        specieId =  $("#nome_especie").attr("data-id-especie");
+
+        $(".titulo_cadastro").removeClass("hidden");
+        $(".titulo_edicao").addClass('hidden');
+    }
 
     // Dados.
     var data = {
         // Nome da função que será executada.
         functionName : "registerSpecie",
-        specieName : inputSpecieName.val()
+        specieName : inputSpecieName.val(),
+        specieId : specieId
     };
 
     // Url da requisição.
