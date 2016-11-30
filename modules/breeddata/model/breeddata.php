@@ -10,7 +10,7 @@ TrabalhoG2\Raca;
 /**
  * Classe model, realizar interações com o banco de dados.
  */
-class ModelRaca {
+class ModelBreedData {
 
     //public static $instance;
     private $conexao;
@@ -34,10 +34,11 @@ class ModelRaca {
     public function gravarRaca(Raca $raca) {
         try {
 
-            if (isset($raca->getId())
+            if ( !is_null($raca->getId()) ){
                 return $this->editar($raca);
-            else
+            } else {
                 return $this->inserir($raca);
+            }
             
         } catch (Exception $e) {
             // Retorna se algum erro ocorreu.
@@ -49,24 +50,20 @@ class ModelRaca {
     public function inserir(Raca $raca) {
         try {
             $sql = "
-            INSERT INTO racas
-            ( nome, id_especie ) 
+            INSERT INTO racas 
+            ( nome) 
             VALUES  
-            ( :nome, :id_especie )";
+            ( :nome)";
 
-            //$conexao = new Connection();
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
 
-            $p_sql = $this->conexao->getInstance()->prepare($sql);
+            $preparaSQL->bindValue(":nome", $raca->getNome());
 
-            $p_sql->bindValue(":nome", $raca->getNome());
-            $p_sql->bindValue(":id_especie", $raca->getIdEspecie());
-
-            return $p_sql->execute();
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . 
-                $e->getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
@@ -74,42 +71,42 @@ class ModelRaca {
         try {
             $sql = "UPDATE racas set
             nome = :nome
-            ,id_especie = :id_especie
             WHERE id = :id";
 
-            $p_sql = Conexao::getInstance()->prepare($sql);
+            $preparaSQL = $this->conexao->prepare($sql);
 
-            $p_sql->bindValue(":nome", $raca->getNome());
-            $p_sql->bindValue(":id_especie", $raca->getIdEspecie());
-            $p_sql->bindValue(":id", $raca->getId());
+           // exit(var_dump((int)$raca->getId()));
 
-            return $p_sql->execute();
+            $preparaSQL->bindValue(":nome", $raca->getNome(), PDO::PARAM_STR);
+            $preparaSQL->bindValue(":id", (int)$raca->getId(), PDO::PARAM_INT);
+
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
     public function deletar($id) {
         try {
             $sql = "DELETE FROM racas WHERE id = :id";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->bindValue(":id", $id);
+            //$p_sql = Conexao::getInstance()->prepare($sql);
 
-            return $p_sql->execute();
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->bindValue(":id", $id);
+
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+           print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
     public function buscarPorId($id) {
         try {
-            $sql = "SELECT * FROM racas WHERE id = :id";
+            $sql = "SELECT * FROM raca WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
             $p_sql->execute();
@@ -125,20 +122,21 @@ class ModelRaca {
     public function buscarTodas() {
         try {
             $sql = "SELECT * FROM racas ";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->execute();
+
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->execute();
             
             $lista = array();
-            while($row = $p_sql->fetch(PDO::FETCH_ASSOC)) {
+            while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
                 array_push($lista, $this->populaRaca($row));
             }
 
             return $lista;
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
@@ -146,7 +144,6 @@ class ModelRaca {
     {
         $raca = new Raca;
         $raca->setId($registro['id']);
-        $raca->setIdEspecie($registro['id_especie']);
         $raca->setNome($registro['nome']);
         return $raca;
     }

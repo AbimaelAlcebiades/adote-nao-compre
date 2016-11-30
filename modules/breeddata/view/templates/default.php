@@ -46,6 +46,15 @@ $footerModule       = $system->getModule("footer");
             <input class="form-control nome_raca" id="nome_raca" name="nome_raca" type="text" value="">
           </div>
         </div>
+        <div class="form-group row">
+          <label for="id_especie" class="col-sm-2 control-label">Espécie<sup>*</sup></label>
+          <div class="col-sm-10">
+            <select class="form-control id_especie" id="id_especie" name="id_especie" type="text" value="">
+              <option value="1">Gato</option>
+              <option value="2">Cachorro</option>
+            </select>
+          </div>
+        </div>
 
         <div class="form-group botoes">
           <button type="submit" class="btn btn-primary enviar-formulario" id="btn_save">

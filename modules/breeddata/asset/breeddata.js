@@ -18,7 +18,7 @@ $(document).ready(function(){
             validateEmptyField("nome_raca")
         ){
             // Cadastra nova raca.
-            cadastraRaca($("#nome_raca"));
+            cadastraRaca($("#nome_raca"), $("#id_especie"));
         }
     });
 
@@ -108,7 +108,7 @@ function validateEmptyField(id){
 }
 
 /* Função cria usuário. */
-function cadastraRaca(inputBreedName){
+function cadastraRaca(inputBreedName, inputIdEspecie){
 
     if ($(".usuario_criado").length ) {
         $(".usuario_criado" ).remove();
@@ -131,8 +131,11 @@ function cadastraRaca(inputBreedName){
         // Nome da função que será executada.
         functionName : "registerBreed",
         breedName : inputBreedName.val(),
-        breedId : breedId
+        breedId : breedId,
+        idSpecie : inputIdEspecie.val()
     };
+
+    
 
     // Url da requisição.
     var url = "../../../../ajax.php";

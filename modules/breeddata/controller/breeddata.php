@@ -3,7 +3,9 @@
 namespace TrabalhoG2;
 
 use \Exception,
-	ViewBreedData;
+	TrabalhoG2\ViewBreedData,
+	TrabalhoG2\ModelBreedData,
+	TrabalhoG2\Raca;
 
 /**
 * Controller for navbar module.
@@ -12,9 +14,11 @@ class ControllerBreedData implements Controller
 {
 
 	private $moduleName;
-	private $view;
-	private $model;
+	private $viewPath;
+	private $modelBreedData;
+	private $viewBreedData;
 	private $cssFile;
+	private $javascriptFile;
 
 	function __construct()
 	{
@@ -24,8 +28,11 @@ class ControllerBreedData implements Controller
 		// Pega a view do módulo.
 		$this->view = self::getViewPath() . strtolower($this->moduleName) . ".php";
 
-		// Pega a model do módulo.
-		$this->model = self::getModelPath() . strtolower($this->moduleName) . ".php";
+		// Arquivo modelBreedData.
+		$this->modelBreedData = self::getModelPath() . strtolower($this->moduleName) . ".php";
+
+		// Arquivo viewBreedData.
+		$this->viewBreedData = self::getViewPath() . strtolower($this->moduleName) . ".php";
 
 		// Pega o css do módulo.
 		$this->cssFile = self::getAssetPath() . "default.css";
@@ -73,6 +80,60 @@ class ControllerBreedData implements Controller
 	}
 
 	/**
+	 * Função que carrega uma model para o módulo.
+	 * @return Model Retorna uma model.
+	 */
+	public function loadModel($modelName, $modelPath){
+
+		// Armazena o arquivo em uma variável.
+		$model = $modelPath;
+
+		// Verificar se existe o caminho da model solicitada.
+		if(file_exists($model)) {
+			// Realiza a requisição do arquivo.
+			require_once $model;
+		}else{
+			// Gera exceção.
+			throw new Exception("Erro ao incluir aquivo model do módulo " . $modelName);
+		}
+
+		// Pega o nome da classe da model.
+		$className =  __NAMESPACE__ . "\\" . "Model" . self::getModuleName();
+
+		// Instância model do módulo.
+		$modelModuleInstance =  new $className();
+
+		return $modelModuleInstance;
+	}
+
+	/**
+	 * Função que carrega uma view para o módulo.
+	 * @return View Retorna uma view.
+	 */
+	public function loadView($viewName, $viewPath){
+
+		// Armazena o arquivo em uma variável.
+		$view = $viewPath;
+
+		// Verificar se existe o caminho da view solicitada.
+		if(file_exists($view)) {
+			// Realiza a requisição do arquivo.
+			require_once $view;
+		}else{
+			// Gera exceção.
+			throw new Exception("Erro ao incluir aquivo view do módulo " . $viewName);
+		}
+
+		// Pega o nome da classe da view.
+		$className =  __NAMESPACE__ . "\\" . "View" . self::getModuleName();
+
+		// Instância model do módulo.
+		$viewModuleInstance =  new $className();
+
+		return $viewModuleInstance;
+	}
+
+	/**
 	 * Renderiza um módulo.
 	 * @param string $viewName Nome da view que será chamada.
 	 * @param string $templateName Nome do template que será utilizado.
@@ -105,73 +166,124 @@ class ControllerBreedData implements Controller
 	}
 
 	/**
-     * Recebe e trata execuções de controllers para o módulo.
-     * @param string $dataPost Dados enviados para a controller.
-     * @return mixed Retorno da função solicitada.
-     */
-    public function controllerExecuteBreedData($dataPost)
-    {
-        // Pega nome da função que será executada.
-        $functionName = explode(".", $dataPost['task']);
-        $functionName = $functionName[1];
+	 * Recebe e trata requisições ajax para o módulo.
+	 * @param string $dataPost Dados enviados via requisição.
+	 * @return mixed Retorno da função solicitada.
+	 */
+	public function ajaxBreedData($dataPost)
+	{
+		// Pega nome da função que será executada.
+		$functionName = $dataPost['data']['functionName'];
 
-        // Tratamentos para requisições.
-        switch ($functionName) {
-            
-            // Executa createBreedData.
-            case "createBreedData":
-                $id = $dataPost['id'];
-                $id_especie = $dataPost['id_especie'];
-                $nome = $dataPost['nome'];
+		// Variável que armazena retorno da requisição.
+		$return = "";
 
-                $templateRedirect = @$dataPost['templateRedirect'];
+		// Tratamentos para requisições.
+		switch ($functionName) {
+			
+			// Executa createUser.
+			case "registerBreed":
+			 	$breedName = $dataPost['data']['breedName'];
+			 	$breedId = $dataPost['data']['breedId'];
+			 
+			 	if($breedId == "0"){
+			 		// Novo registro.
+			 		self::registerBreed($breedName);
+			 	}else{
+			 		// Update de registro.
+			 		self::updateBreed($breedName, $breedId);
+			 	}
+			 	break;
 
-                self::createBreed($id, $id_especie, $nome, $templateRedirect);
-                break;
-            
-            // Comportamento padrão.
-            default:
-                break;
-        }
-    }
+			// Executa createUser.
+			case "loadBreedList":
+			 	self::loadBreedList();
+			 	break;
 
-    /**
-     * Função que grava o usuário.
-     * @param string $name Nome do usuário.
-     * @param string $email Email do usuário(usuário).
-     * @param string $password Senha do usuário.
-     * @return boolean Retorna true se o usuário foi criado com sucesso ou false caso contrario.
-     */
-    public function createBreed($id, $id_especie, $nome, $templateRedirect = false){
-        $retorno = array();
+			// Executa createUser.
+			case "deleteBreed":
+				$idBreed = $dataPost['data']['idBreed'];
+			 	self::deleteBreed($idBreed);
+			 	break;  	
+			
+			// Comportamento padrão.
+			default:
+				break;
+		}
 
-        // Carrega model.
-        $model = self::loadModel("userdata", $this->model);
+		// Retorna requisição.
+		return $return;
 
-        $raca =  new Raca();
-		$raca->setId($id);
-		$raca->setIdEspecie($id_especie);
-        $raca->setNome($nome);
+	}
 
-        // grava raça no banco de dados.
-        $resultado = $model->gravarRaca($raca);
+	/**
+	 * Função que cria uma raça.
+	 * @param string $breedName Nome da raça.
+	 * @return boolean Retorna true se a raça foi criada ou false caso contrario.
+	 */
+	public function registerBreed($breedName, $idSpecie){
+		$retorno = array();
 
-        if($resultado){
-            $retorno["codigo"] = 1;
-            $retorno["mensagem"] = "Dados salvos com sucesso";
-        }else{
-            $retorno["codigo"] = 0;
-            $retorno["mensagem"] = "Ocorreu um erro ao salvar o usuário";
-        }
+		// Carrega model.
+		$modelBreedData = self::loadModel("breeddata", $this->modelBreedData);
 
-        if($templateRedirect){
-            // Retornar template.
-            exit(include "modules/login/view/templates/$templateRedirect.php");
-        }else{
-            return $resultado;
-        }
+		$raca = new Raca();
+		$raca->setNome($breedName);
+		$raca->setIdEspecie($idSpecie);
 
-    }
+		$modelBreedData->inserir($raca);
+	}
+
+	/**
+	 * Função que altera uma raça.
+	 * @param string $breedName Nome da raça.
+	 * @param int $breedId Id da raça.
+	 * @return boolean Retorna true se a raça foi atualizada ou false caso contrario.
+	 */
+	public function updateBreed($breedName, $breedId){
+		$retorno = array();
+
+		// Carrega model.
+		$modelBreedData = self::loadModel("breeddata", $this->modelBreedData);
+
+		$raca = new Raca();
+		$raca->setNome($breedName);
+		$raca->setId($breedId);
+		
+		$modelBreedData->editar($raca);
+
+	}
+
+	/**
+	 * Função que deleta uma raça.
+	 * @param string $idBreed Id da breed.
+	 * @return boolean Retorna true se a raça foi deletada ou false caso contrario.
+	 */
+	public function deleteBreed($idBreed){
+		$retorno = array();
+
+		// Carrega model.
+		$modelBreedData = self::loadModel("breeddata", $this->modelBreedData);
+
+		//$raca = new Raca();
+		//$raca->setNome($breedName);
+
+		$modelBreedData->deletar($idBreed);
+
+	}
+
+	/**
+	 * Função que carrega lista de raças.
+	 * @return string Retorna html da listagem.
+	 */
+	public function loadBreedList(){
+		
+		// Carrega model.
+		$viewBreedData = self::loadView("breeddata", $this->viewBreedData);
+		$racas = array();
+		$viewBreedData->display("listagem_racas");
+
+	}
 
 }
 
