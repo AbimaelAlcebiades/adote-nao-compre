@@ -11,7 +11,10 @@
 				<li><a href="#">Perfil</a></li>
 				<li><a href="#">Meus cães</a></li>
 				<?php if($administrador){ ?>
-					<li><a href="modules/speciedata/view/templates/default.php">Cadastro de especies</a></li>
+					<li><a href="modules/speciedata/view/templates/default.php">Cadastro de Espécies</a></li>
+				<?php } ?>
+				<?php if($administrador){ ?>
+					<li><a href="modules/breeddata/view/templates/default.php">Cadastro de Raças</a></li>
 				<?php } ?>
 				<li role="separator" class="divider"></li>
 				<li><a href="#" class="module-login link-sair">sair</a></li>
