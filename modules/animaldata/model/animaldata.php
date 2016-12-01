@@ -55,22 +55,21 @@ class ModelAnimalData {
                 VALUES  
                     ( :id_raca, :id_usuario, :nome, :idade, :peso, :sexo, :foto, :informacoes, :adotado )";
 
-            $p_sql = $this->conexao->getInstance()->prepare($sql);
+            $preparaSQL = $this->conexao->prepare($sql);
 
-            $p_sql->bindValue(":id_raca", $animal->getIdRaca());
-            $p_sql->bindValue(":id_usuario", $animal->getIdUsuario());
-            $p_sql->bindValue(":nome", $animal->getNome());
-            $p_sql->bindValue(":idade", $animal->getIdade());
-            $p_sql->bindValue(":peso", $animal->getPeso());
-            $p_sql->bindValue(":informacoes", $animal->getInformacoes());
-            $p_sql->bindValue(":adotado", $animal->getAdotado());
+            $preparaSQL->bindValue(":id_raca", $animal->getIdRaca());
+            $preparaSQL->bindValue(":id_usuario", $animal->getIdUsuario());
+            $preparaSQL->bindValue(":nome", $animal->getNome());
+            $preparaSQL->bindValue(":idade", $animal->getIdade());
+            $preparaSQL->bindValue(":peso", $animal->getPeso());
+            $preparaSQL->bindValue(":sexo", $animal->getSexo());
+            $preparaSQL->bindValue(":foto", $animal->getFoto());
+            $preparaSQL->bindValue(":informacoes", $animal->getInformacoes());
+            $preparaSQL->bindValue(":adotado", $animal->getAdotado());
 
-            return $p_sql->execute();
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . 
-                $e->getCode() . " Mensagem: " . $e->getMessage());
+            print  $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
     //id_raca, id_usuario, nome, idade, peso, sexo, foto, informacoes, adotado
@@ -146,6 +145,29 @@ class ModelAnimalData {
         }
     }
 
+    public function buscarTodasRacas($idEspecie) {
+        try {
+            $sql = "SELECT * FROM racas where id_especie = :id_especie";
+
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            $preparaSQL->bindValue(":id_especie", $idEspecie, PDO::PARAM_INT);
+            
+            $preparaSQL->execute();
+            
+            $lista = array();
+
+            while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
+                array_push($lista, $row);
+            }
+
+            return $lista;
+        } catch (Exception $e) {
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
+        }
+    }
+
     public function buscarTodos($idUsuario = false) {
         try {
             if($idUsuario == false){
@@ -188,6 +210,35 @@ class ModelAnimalData {
         $animal->setInformacoes($registro['informacoes']);
         $animal->setAdotado($registro['adotado']);
         return $animal;
+    }
+
+    public function buscarTodasEspecies() {
+        try {
+            $sql = "SELECT * FROM especies ";
+
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->execute();
+            
+            $lista = array();
+            while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
+                array_push($lista, $this->populaEspecie($row));
+            }
+
+            return $lista;
+        } catch (Exception $e) {
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
+        }
+    }
+
+    private function populaEspecie($registro) 
+    {
+        $especie = new Especie;
+        $especie->setId($registro['id']);
+        $especie->setNome($registro['nome']);
+        return $especie;
     }
 
 }

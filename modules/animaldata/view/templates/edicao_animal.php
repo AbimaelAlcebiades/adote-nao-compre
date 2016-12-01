@@ -4,7 +4,8 @@
 include_once "../../../../system.php"; 
 
 // Declaração do uso de classes.
-use TrabalhoG2\System;
+use TrabalhoG2\System,
+    TrabalhoG2\Animal;
 
 // Inicia o sistema.
 $system = New System();
@@ -14,12 +15,34 @@ $navbarModule       = $system->getModule("navbar");
 $footerModule       = $system->getModule("footer");
 $animalData         = $system->getModule("animaldata");
 
+$listaAnimais = $animalData->loadSpecieList();
+
+if($_POST){
+
+    session_start();
+    $usuario = $_SESSION['usuarioLogado'];
+
+    $animal = new animal();
+
+    $animal->setNome($_POST["Nome"]);
+    //$animal->setEspecie($_POST["idEspecie"]);
+    $animal->setIdUsuario($usuario->getId());
+    $animal->setIdRaca($_POST["idRaca"]);
+    $animal->setIdade($_POST["Idade"]);
+    $animal->setPeso($_POST["Peso"]);
+    $animal->setSexo($_POST["Sexo"]);
+    $animal->setFoto("sem valor");
+    $animal->setInformacoes($_POST["Info"]);
+    $animal->setAdotado(0);
+
+    $animalData->inserir($animal);
+}
+
+
 if(@$_GET["animal"]){
-    
   session_start();
   $usuario = $_SESSION['usuarioLogado'];
   $animal = $animalData->buscarPorId($_GET["animal"], $usuario->getId());
-
 }
 
 ?>
@@ -36,7 +59,7 @@ if(@$_GET["animal"]){
   <?php /* Carrega arquivos Javascript. */ ?>
   <script type="text/javascript" src="../../../../assets/js/jquery.js"></script>
   <script type="text/javascript" src="../../../../assets\js\bootstrap.min.js"></script> 
-  <script type="text/javascript" src="../../asset/speciedata.js"></script>
+  <script type="text/javascript" src="../../asset/animaldata.js"></script>
 
 </head>
 <body>
@@ -49,35 +72,36 @@ if(@$_GET["animal"]){
 
   <h2>Cadastro de animal</h2>
   <br>
-  <form class="form-inline" action="/dog/create/" method="post" enctype="multipart/form-data">
+  <form class="form-inline" action="" method="post" enctype="multipart/form-data">
     
     <label>Nome (opcional)</label>
-    <p><input class="form-control" id="id_Nome" value="<?php echo $animal->getNome(); ?>" maxlength="20" name="Nome" type="text" /></p>
+    <p><input class="form-control" id="id_Nome" value="<?php if(@$animal){ echo $animal->getNome(); } ?>" maxlength="20" name="Nome" type="text" /></p>
 
     <label>Espécie</label>
-    <p><select class="form-control" id="id_IdRaca" name="idEspecie" required>
-      <option value="1" selected="selected">Cachorro</option>
-      <option value="2">Gato</option>
-    </select></p>
-
+    <p>
+      <select class="form-control" id="id_especie" name="idEspecie" required>
+      <?php
+      foreach ($listaAnimais as $animalCorente) { ?>
+        <option value="<?php echo $animalCorente->getId(); ?>" <?php if(@$animal && $animal->getIdRaca() == $animalCorente->getId() ){ echo "selected"; } ?>>
+            <?php echo $animalCorente->getNome(); ?>  
+        </option>
+      <?php
+      }
+      ?>
+      </select>
+    </p>
 
     <label>Raça</label>
-    <p><select class="form-control" id="id_IdRaca" name="idRaca" required>
-      <option value="1" selected="selected">Sem Raça Definida</option>
-      <option value="5">Affenpinscher</option>
-      <option value="6">Afghan Hound</option>
-      <option value="7">Airedale Terrier</option>
-      <option value="8">Akita</option>
-      <option value="9">Akita Americano</option>
-      <option value="10">American Pit Bull Terrier</option>
-    </select></p>
+    <p>
+        <select class="form-control" id="id_raca" name="idRaca" required>
+        </select>
+    </p>
     
     <label>Idade</label>
-    <p><input class="form-control" value="<?php echo $animal->getIdade(); ?>" id="id_Idade" name="Idade" type="number" min="0" max="30" /></p>
-    
+    <p><input class="form-control" value="<?php if(@$animal){ echo $animal->getIdade(); } ?>" id="id_Idade" name="Idade" type="number" min="0" max="30" /></p>
     
     <label>Peso</label>
-    <p><input class="form-control" id="id_Peso" value="<?php echo $animal->getPeso(); ?>" name="Peso" step="any" type="number" min="0" required /></p>
+    <p><input class="form-control" id="id_Peso" value="<?php if(@$animal){ echo $animal->getNome(); } ?>" name="Peso" step="any" type="number" min="0" required /></p>
     
     <label>Sexo</label>
     <p><select class="form-control" id="id_Sexo" name="Sexo" required>
@@ -91,13 +115,13 @@ if(@$_GET["animal"]){
     </p>
 
     <label>Informações adicionais</label>
-    <p><textarea rows="4" cols="50" class="form-control" name="Info" required=""><?php echo $animal->getInformacoes(); ?></textarea></p>
+    <p><textarea rows="4" cols="50" class="form-control" name="Info" required=""><?php if(@$animal){ echo $animal->getInformacoes(); } ?></textarea></p>
 
     <button type="submit" class="btn btn-primary">
       <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true">&nbsp;</span>Salvar
     </button>
 
-    <a href="/dog/list" class="btn btn-danger" role="button">
+    <a href="../../../../index.php" class="btn btn-danger" role="button">
       <span class="glyphicon glyphicon-remove-circle" aria-hidden="true">&nbsp;</span>Cancelar
     </a>
   </form>

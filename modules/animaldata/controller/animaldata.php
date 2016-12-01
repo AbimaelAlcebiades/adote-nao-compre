@@ -66,6 +66,53 @@ class ControllerAnimalData implements Controller
 		return $modelPath;
 	}
 
+	/**
+	 * Recebe e trata requisições ajax para o módulo.
+	 * @param string $dataPost Dados enviados via requisição.
+	 * @return mixed Retorno da função solicitada.
+	 */
+	public function ajaxAnimalData($dataPost)
+	{
+		// Pega nome da função que será executada.
+		$functionName = $dataPost['data']['functionName'];
+
+		// Variável que armazena retorno da requisição.
+		$return = "";
+
+		// Tratamentos para requisições.
+		switch ($functionName) {
+			
+			// Executa createUser.
+			case "loadRacaList":
+			 	$idEspecie = $dataPost['data']['idEspecie'];
+			 	self::loadRacaList($idEspecie);
+			 	break;
+			
+			// Comportamento padrão.
+			default:
+				break;
+		}
+
+		// Retorna requisição.
+		return $return;
+
+	}
+
+	/**
+	 * Função que carrega lista de especies.
+	 * @return string Retorna todas as especies cadastradas no banco de dados.
+	 */
+	public function loadRacaList($idSpecie){
+		
+		// Carrega model.
+		$modelAnimalData = self::loadModel("animaldata", $this->modelAnimalData);
+
+		$resultado = $modelAnimalData->buscarTodasRacas($idSpecie);
+
+		exit(json_encode($resultado));
+
+	}
+
 	private function getAssetPath()
 	{
 		// Pega constante com o caminho padrão para o diretório de assets.
@@ -242,7 +289,25 @@ class ControllerAnimalData implements Controller
 		$animal = $modelAnimalData->buscarPorId($id, $idUsuario);
 
 		return $animal;
+	}
 
+	public function inserir(Animal $animal){
+		// Carrega model.
+		$modelAnimalData = self::loadModel("speciedata", $this->modelAnimalData);
+
+		$modelAnimalData->inserir($animal);
+	}
+
+	/**
+	 * Função que carrega lista de especies.
+	 * @return string Retorna html da listagem.
+	 */
+	public function loadSpecieList(){
+		
+		// Carrega model.
+		$modelAnimalData = self::loadModel("speciedata", $this->modelAnimalData);
+
+		return $modelAnimalData->buscarTodasEspecies();
 	}
 
 }
