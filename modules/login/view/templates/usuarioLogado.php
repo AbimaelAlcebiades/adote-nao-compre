@@ -8,7 +8,7 @@
 			<span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu">
-				<li><a href="#">Perfil</a></li>
+				<li><a href="modules/userdata/view/templates/default.php">Perfil</a></li>
 				<li><a href="#">Meus cães</a></li>
 				<?php if($administrador){ ?>
 					<li><a href="modules/speciedata/view/templates/default.php">Cadastro de Espécies</a></li>
