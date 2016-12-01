@@ -69,14 +69,17 @@ class ModelBreedData {
 
     public function editar(Raca $raca) {
         try {
-            $sql = "UPDATE racas set
-            nome = :nome
-            WHERE id = :id";
+            $sql = "
+            UPDATE 
+                racas 
+            SET
+                nome = :nome, id_especie = :id_especie
+            WHERE 
+                id = :id";
 
             $preparaSQL = $this->conexao->prepare($sql);
 
-           // exit(var_dump((int)$raca->getId()));
-
+            $preparaSQL->bindValue(":id_especie", $raca->getIdEspecie(), PDO::PARAM_INT);
             $preparaSQL->bindValue(":nome", $raca->getNome(), PDO::PARAM_STR);
             $preparaSQL->bindValue(":id", (int)$raca->getId(), PDO::PARAM_INT);
 
