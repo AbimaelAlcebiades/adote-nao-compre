@@ -21,7 +21,7 @@ class Raca {
     }
 
     public function setIdEspecie($idEspecie) {
-        $this->id = $idEspecie;
+        $this->idEspecie= $idEspecie;
     }
 
     public function getNome() {

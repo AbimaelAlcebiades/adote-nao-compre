@@ -185,14 +185,20 @@ class ControllerBreedData implements Controller
 			case "registerBreed":
 			 	$breedName = $dataPost['data']['breedName'];
 			 	$breedId = $dataPost['data']['breedId'];
-			 
+			 	$idSpecie = $dataPost['data']['idSpecie'];
+
 			 	if($breedId == "0"){
 			 		// Novo registro.
-			 		self::registerBreed($breedName);
+			 		self::registerBreed($breedName, $idSpecie);
 			 	}else{
 			 		// Update de registro.
-			 		self::updateBreed($breedName, $breedId);
+			 		self::updateBreed($breedName, $idSpecie, $breedId);
 			 	}
+			 	break;
+
+			// Executa createUser.
+			case "loadSpecieList":
+			 	self::loadSpecieList();
 			 	break;
 
 			// Executa createUser.
@@ -240,7 +246,7 @@ class ControllerBreedData implements Controller
 	 * @param int $breedId Id da raça.
 	 * @return boolean Retorna true se a raça foi atualizada ou false caso contrario.
 	 */
-	public function updateBreed($breedName, $breedId){
+	public function updateBreed($breedName, $idSpecie, $breedId){
 		$retorno = array();
 
 		// Carrega model.
@@ -249,6 +255,7 @@ class ControllerBreedData implements Controller
 		$raca = new Raca();
 		$raca->setNome($breedName);
 		$raca->setId($breedId);
+		$raca->setIdEspecie($idSpecie);
 		
 		$modelBreedData->editar($raca);
 
@@ -265,8 +272,8 @@ class ControllerBreedData implements Controller
 		// Carrega model.
 		$modelBreedData = self::loadModel("breeddata", $this->modelBreedData);
 
-		//$raca = new Raca();
-		//$raca->setNome($breedName);
+		$raca = new Raca();
+		$raca->setNome($breedName);
 
 		$modelBreedData->deletar($idBreed);
 
@@ -284,6 +291,24 @@ class ControllerBreedData implements Controller
 		$viewBreedData->display("listagem_racas");
 
 	}
+
+
+	/**
+	 * Função que carrega lista de especies.
+	 * @return string Retorna todas as especies cadastradas no banco de dados.
+	 */
+	public function loadSpecieList(){
+		
+		// Carrega model.
+		$modelBreedData = self::loadModel("breeddata", $this->modelBreedData);
+
+		$resultado = $modelBreedData->buscarTodasEspecies();
+
+		exit(json_encode($resultado));
+
+	}
+
+	
 
 }
 

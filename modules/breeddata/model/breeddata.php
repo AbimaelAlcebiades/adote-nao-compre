@@ -46,19 +46,19 @@ class ModelBreedData {
         }
     }
 
-
     public function inserir(Raca $raca) {
         try {
             $sql = "
             INSERT INTO racas 
-            ( nome) 
+                (id_especie, nome) 
             VALUES  
-            ( :nome)";
+                (:id_especie, :nome)";
 
             // Trata consulta SQL.
             $preparaSQL = $this->conexao->prepare($sql);
 
-            $preparaSQL->bindValue(":nome", $raca->getNome());
+            $preparaSQL->bindValue(":nome", $raca->getNome(), PDO::PARAM_STR);
+            $preparaSQL->bindValue(":id_especie", $raca->getIdEspecie(), PDO::PARAM_INT);
 
             return $preparaSQL->execute();
         } catch (Exception $e) {
@@ -140,9 +140,31 @@ class ModelBreedData {
         }
     }
 
+    public function buscarTodasEspecies() {
+        try {
+            $sql = "SELECT * FROM especies";
+
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->execute();
+            
+            $lista = array();
+
+            while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
+                array_push($lista, $row);
+            }
+        
+            return $lista;
+        } catch (Exception $e) {
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
+        }
+    }
+
     private function populaRaca($registro) 
     {
-        $raca = new Raca;
+        $raca = new Raca();
         $raca->setId($registro['id']);
         $raca->setNome($registro['nome']);
         return $raca;

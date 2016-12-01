@@ -8,10 +8,10 @@ const ROOT_PATH = __DIR__ . "\\";
 const MODULES_PATH = ROOT_PATH . 'modules' . "\\";
 
 //****** USAR AUTOLOAD, (IMPLEMENTAR AUTOLOAD PARA CARREGAR CLASSES).
-require_once "classes" . "\\" . "connection.php";
+require_once "classes" . "\\" . "Connection.php";
 require_once "tables" . "\\" . "Usuario.php";
 require_once "tables" . "\\" . "Especie.php";
-require_once "classes" . "\\" . "DaoUsuario.php";
+require_once "tables" . "\\" . "Raca.php";
 require_once "classes" . "\\" . "Controller.php";
 require_once "classes" . "\\" . "View.php";
 
@@ -30,23 +30,12 @@ class System{
 	// Variável que armazena conexão para interação com o banco de dados.
 	private $connection;
 
+	// Metódo construtor da classe.
 	function __construct(){
 		// Instância uma conexão com o banco de dados.
 		$connection = new Connection();
 		// Define uma conexão.
 		$this->connection = $connection->getInstance();
-	}
-	
-	public function execute(){
-		$usuario = new Usuario();
-
-		$usuario->setNome("Abimael");
-		$usuario->setEmail("abimaelafsilva@gmail.com");
-		$usuario->setSenha("senha");
-
-		$daoUsuario = DaoUsuario::getInstance();
-
-		$daoUsuario->inserir($usuario);
 	}
 
 	/**
@@ -86,10 +75,11 @@ class System{
 	 */
 	public function loadCSS(Controller $controller){
 		
+		// Template de HTML.
 		$htmlCSSInsert = '<link rel="stylesheet" type="text/css" href="#cssPath#">';
-
+		// Pega caminho do CSS.
 		$cssPath = $controller->getCSS();
-
+		// Realiza replace no template HTML.
 		$htmlCSSInsert = str_replace("#cssPath#", $cssPath, $htmlCSSInsert);
 
 		return $htmlCSSInsert;
@@ -103,32 +93,46 @@ class System{
 	 */
 	public function loadJavascript($moduleName, $scriptName){
 
+		// Pega o módulo.
 		$modulo = self::getModule($moduleName);
-		
+		// Template de HTML.
 		$htmlJavascriptInsert = '<script src=#javascriptPath#></script>';
+		// Pega caminho do javascript.
 		$javascriptPath = $modulo->getJavascript();
+		// Realiza replace no template HTML.
 		$htmlJavascriptInsert = str_replace("#javascriptPath#", $javascriptPath, $htmlJavascriptInsert);
 
 		return $htmlJavascriptInsert;
 	}
 
-
+	/**
+	 * Função que recebe e direciona requisições ajax para o módulo correto.
+	 * @param string $moduleName Nome do módulo que vai receber a requisição.
+	 * @return Retorna uma chamada para o módulo.
+	 */
 	public function executeAjaxModuleFunction($moduleName){
 
+		// Pega o módulo.
 		$module = self::getModule($moduleName);
-
+		// Nome padrão da função.
 		$function = "ajax$moduleName";
-
+		// Retorna função passando post capturado.
 		return $module->$function($_POST);
 	}
 
 
+	/**
+	 * Funçãi que recebe e trata execuções de controllers.
+	 * @param string $moduleName Nome do módulo.
+	 * @return Retorna uma chamada para o módulo.
+	 */
 	public function executeControllerModule($moduleName){
 
+		// Pega o módulo.
 		$module = self::getModule($moduleName);
-
+		// Nome padrão da função.
 		$function = "controllerExecute$moduleName";
-
+		// Retorna função passando post capturado.
 		return $module->$function($_POST);
 	}
 }

@@ -82,8 +82,6 @@ class ViewSpecieData implements View
 
 	public function display($templateName)
 	{
-
-
 		if($templateName == "listagem_especies"){
 			// Carrega model.
 			$modelSpecieData = self::loadModel("speciedata", $this->modelSpecieData);

@@ -82,12 +82,11 @@ class ViewBreedData implements View
 
 	public function display($templateName)
 	{
-
-
 		if($templateName == "listagem_racas"){
 			// Carrega model.
 			$modelBreedData = self::loadModel("breeddata", $this->modelBreedData);
 			$racas = $modelBreedData->buscarTodas();
+
 		}
 
 		include 'templates' . "\\" . $templateName . '.php'; 

@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
     carregaListagemRacas();
+    carregaEspecies();
 
     // Evento de clique no botão "salvar".
     $("#btn_save").on("click", function(e){
@@ -16,11 +17,11 @@ $(document).ready(function(){
         // Verifica se todos os campos são válidos.
         if(
             validateEmptyField("nome_raca")
-        ){
+            ){
             // Cadastra nova raca.
-            cadastraRaca($("#nome_raca"), $("#id_especie"));
-        }
-    });
+        cadastraRaca($("#nome_raca"), $("#id_especie"));
+    }
+});
 
     // Evento de clique no botão "cancelar".
     $(".btn-cancel").on("click", function(e){
@@ -36,7 +37,7 @@ $(document).ready(function(){
     });
 
      // Evento de clique no botão "excluir".
-    $("div.listagem-racas").on("click", "a.excluir-raca", function(e){
+     $("div.listagem-racas").on("click", "a.excluir-raca", function(e){
         // Evita comportamento padrão do botão.
         e.preventDefault();
 
@@ -52,6 +53,8 @@ $(document).ready(function(){
     $("div.listagem-racas").on("click", ".alterar-raca", function(e){
         // Evita comportamento padrão do botão.
         e.preventDefault();
+
+        liberaTodosBotoes();
 
         $("#nome_raca").val($(this).parent().prev().text());
         $("#nome_raca").attr("data-id-raca", $(this).attr("data-id"));
@@ -79,7 +82,7 @@ $(document).ready(function(){
 
 function liberaTodosBotoes() {
     $(".btn").each(function( i ) {
-            $(this).removeAttr('disabled');
+        $(this).removeAttr('disabled');
     });
 }
 
@@ -119,8 +122,9 @@ function cadastraRaca(inputBreedName, inputIdEspecie){
     var breedId = 0;
     var editMode = $(".enviar-formulario");
 
-    if(editMode.hasClass('breed-edit')){
+    if(editMode.hasClass('raca-edit')){
         breedId =  $("#nome_raca").attr("data-id-raca");
+
 
         $(".titulo_cadastro").removeClass("hidden");
         $(".titulo_edicao").addClass('hidden');
@@ -135,8 +139,6 @@ function cadastraRaca(inputBreedName, inputIdEspecie){
         idSpecie : inputIdEspecie.val()
     };
 
-    
-
     // Url da requisição.
     var url = "../../../../ajax.php";
 
@@ -148,6 +150,8 @@ function cadastraRaca(inputBreedName, inputIdEspecie){
             data: data
         },
         success: function(result) {
+
+            console.log(result);
 
             inputBreedName.val("");
             inputBreedName.css('border',' 1px solid #ccc');
@@ -186,8 +190,7 @@ function excluirRaca(buttonDeleteBreed){
             data: data
         },
         success: function(result) {
-            console.log(result);
-            location.reload(); 
+            location.reload();
         },
     });
 }
@@ -218,6 +221,40 @@ function carregaListagemRacas(){
         },
         success: function(result) {
             $("div.listagem-racas").append(result);
+        },
+    });
+}
+
+/* Função carrega listagem de raças */
+function carregaEspecies(){
+    // Dados.
+    var data = {
+        // Nome da função que será executada.
+        functionName : "loadSpecieList",
+    };
+
+    // Url da requisição.
+    var url = "../../../../ajax.php";
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+            moduleName: "breeddata",
+            data: data
+        },
+        success: function(result) {
+
+            result = $.parseJSON(result);
+
+            var selectSpecies = $('#id_especie');
+            $.each(result, function(index, item) {
+                selectSpecies.append(
+                    $('<option></option>').val(item.id).html(item.nome)
+                );
+            });
+
+
         },
     });
 }

@@ -53,6 +53,8 @@ $(document).ready(function(){
         // Evita comportamento padrão do botão.
         e.preventDefault();
 
+        liberaTodosBotoes();
+
         $("#nome_especie").val($(this).parent().prev().text());
         $("#nome_especie").attr("data-id-especie", $(this).attr("data-id"));
 
@@ -183,7 +185,7 @@ function excluirEspecie(buttonDeleteSpecie){
             data: data
         },
         success: function(result) {
-            console.log(result);
+            
             location.reload(); 
         },
     });
