@@ -13,7 +13,7 @@
         <td><?php echo $raca->getId(); ?></td>
         <td class="nome_raca_lista"><?php echo $raca->getNome(); ?></td>
         <td>
-          <button type="submit" data-id="<?php echo $raca->getId(); ?>" class="btn btn-primary alterar-raca" id="btn_alter">Alterar</button>
+          <button type="submit" data-id-specie="<?php echo $raca->getIdEspecie(); ?>" data-id="<?php echo $raca->getId(); ?>" class="btn btn-primary alterar-raca" id="btn_alter">Alterar</button>
           <a href="#" data-id="<?php echo $raca->getId(); ?>" class="btn btn-danger excluir-raca" role="button">Excluir</a>
         </td>
       </tr>

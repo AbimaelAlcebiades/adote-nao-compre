@@ -68,6 +68,8 @@ $(document).ready(function(){
         $(".titulo_cadastro").addClass("hidden");
         $(".titulo_edicao").removeClass('hidden');
 
+        $('#id_especie').val($(this).attr("data-id-specie"));
+
     });
 
     // Evento de foco no campo nome_raca.

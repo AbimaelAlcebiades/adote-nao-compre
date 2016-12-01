@@ -121,7 +121,11 @@ class ModelBreedData {
 
     public function buscarTodas() {
         try {
-            $sql = "SELECT * FROM racas ";
+            $sql = "
+            SELECT
+                *
+            FROM 
+                racas";
 
             // Trata consulta SQL.
             $preparaSQL = $this->conexao->prepare($sql);
@@ -154,7 +158,7 @@ class ModelBreedData {
             while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
                 array_push($lista, $row);
             }
-        
+
             return $lista;
         } catch (Exception $e) {
             print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
@@ -167,6 +171,7 @@ class ModelBreedData {
         $raca = new Raca();
         $raca->setId($registro['id']);
         $raca->setNome($registro['nome']);
+        $raca->setIdEspecie($registro['id_especie']);
         return $raca;
     }
 
