@@ -9,7 +9,7 @@
 			</button>
 			<ul class="dropdown-menu">
 				<li><a href="modules/userdata/view/templates/default.php">Perfil</a></li>
-				<li><a href="modules/animaldata/view/templates/listagem_animais.php">Meus cães</a></li>
+				<li><a href="modules/animaldata/view/templates/default.php">Meus cães</a></li>
 				<?php if($administrador){ ?>
 					<li><a href="modules/speciedata/view/templates/default.php">Cadastro de Espécies</a></li>
 				<?php } ?>

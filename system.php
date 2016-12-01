@@ -12,6 +12,7 @@ require_once "classes" . "\\" . "Connection.php";
 require_once "tables" . "\\" . "Usuario.php";
 require_once "tables" . "\\" . "Especie.php";
 require_once "tables" . "\\" . "Raca.php";
+require_once "tables" . "\\" . "Animal.php";
 require_once "classes" . "\\" . "Controller.php";
 require_once "classes" . "\\" . "View.php";
 

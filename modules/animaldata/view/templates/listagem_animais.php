@@ -1,42 +1,4 @@
-<?php 
-
-// Inclue arquivo principal do sistema.
-include_once "../../../../system.php"; 
-
-// Declaração do uso de classes.
-use TrabalhoG2\System;
-
-// Inicia o sistema.
-$system = New System();
-
-// Carrega módulos.
-$navbarModule       = $system->getModule("navbar"); 
-$footerModule       = $system->getModule("footer");
-
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Adote, não compre!</title>
-  <meta charset="utf-8">
-  <?php /* Carrega arquivos CSS. */ ?>
-  <link rel="stylesheet" type="text/css" href="..\..\..\..\assets\css\bootstrap.css">
-  <link rel="stylesheet" type="text/css" href="..\..\asset\default.css">
-  
-  <?php /* Carrega arquivos Javascript. */ ?>
-  <script type="text/javascript" src="../../../../assets/js/jquery.js"></script>
-  <script type="text/javascript" src="../../../../assets\js\bootstrap.min.js"></script> 
-  <script type="text/javascript" src="../../asset/speciedata.js"></script>
-
-</head>
-<body>
-  <?php
-    // Tenta realizar a inserção dos módulos.
-  try {
-    $navbarModule->toRender("navbar", "raw"); ?>
-
-    <div class="container">
+ <div class="container">
       <div>
         <h1>Meus Cães</h1>
       </div>
@@ -51,24 +13,27 @@ $footerModule       = $system->getModule("footer");
           </thead>
 
           <tbody>
+              <?php foreach ($animalList as $animal) { ?>
+              
             <tr>
               <td>
-                Loop
+                <?php echo $animal->getNome(); ?>
               </td>
               <td>
-                <a href="/dog/edit/41" class="btn btn-info" role="button">
+                <a href="../templates/edicao_animal.php?animal=<?php echo $animal->getId(); ?>" class="btn btn-info" role="button">
                   <span class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;</span>Editar
                 </a>
 
-                <a class="btn btn-danger" role="button" name="delete" data-id="41">
+                <a class="btn btn-danger" role="button" name="delete" data-id="<?php echo $animal->getId(); ?>">
                   <span class="glyphicon glyphicon-remove-circle" aria-hidden="true">&nbsp;</span>Excluir
                 </a>
               </td>
             </tr>
+             <?php } ?>
           </tbody>
         </table>
 
-        <a href="/dog/create" id="id_add_dog" class="btn btn-success" role="button">
+        <a href="../templates/edicao_animal.php" id="id_add_dog" class="btn btn-success" role="button">
           <span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;</span>Adicionar Cão
         </a>
 
@@ -76,14 +41,3 @@ $footerModule       = $system->getModule("footer");
 
       <hr>
     </div> 
-
-    <?php
-    $footerModule->toRender("footer", "default");
-    // Captura exeções.
-  } catch (Exception $e) {
-    echo $e->getMessage();
-  }
-  ?>
-</body>
-</html>
-

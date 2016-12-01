@@ -15,6 +15,7 @@ class ControllerAnimalData implements Controller
 	private $view;
 	private $model;
 	private $cssFile;
+	private $modelAnimalData;
 
 	function __construct()
 	{
@@ -26,6 +27,9 @@ class ControllerAnimalData implements Controller
 
 		// Pega a model do módulo.
 		$this->model = self::getModelPath() . strtolower($this->moduleName) . ".php";
+
+		// Arquivo modelAnimalData.
+		$this->modelAnimalData = self::getModelPath() . strtolower($this->moduleName) . ".php";
 
 		// Pega o css do módulo.
 		$this->cssFile = self::getAssetPath() . "default.css";
@@ -184,8 +188,62 @@ class ControllerAnimalData implements Controller
         }else{
             return $resultado;
         }
-
     }
+
+    /**
+	 * Função que carrega lista de especies.
+	 * @return string Retorna html da listagem.
+	 */
+	public function loadAnimalList(){
+		
+		// Carrega model.
+		$ViewAnimalData = self::loadView("speciedata", $this->ViewAnimalData);
+		$especies = array();
+		$ViewAnimalData->display("listagem_animais");
+	}
+
+	/**
+	 * Função que carrega uma model para o módulo.
+	 * @return Model Retorna uma model.
+	 */
+	public function loadModel($modelName, $modelPath){
+
+		// Armazena o arquivo em uma variável.
+		$model = $modelPath;
+
+		// Verificar se existe o caminho da model solicitada.
+		if(file_exists($model)) {
+			// Realiza a requisição do arquivo.
+			require_once $model;
+		}else{
+			// Gera exceção.
+			throw new Exception("Erro ao incluir aquivo model do módulo " . $modelName);
+		}
+
+		// Pega o nome da classe da model.
+		$className =  __NAMESPACE__ . "\\" . "Model" . self::getModuleName();
+
+		// Instância model do módulo.
+		$modelModuleInstance =  new $className();
+
+		return $modelModuleInstance;
+	}
+
+	/**
+	 * Função que carrega registro de um animal.
+	 * @return Array retorna um registro de animal.
+	 */
+	public function buscarPorId($id, $idUsuario){
+		
+		// Carrega model.
+		$modelAnimalData = self::loadModel("speciedata", $this->modelAnimalData);
+
+		// Pega usuário.
+		$animal = $modelAnimalData->buscarPorId($id, $idUsuario);
+
+		return $animal;
+
+	}
 
 }
 

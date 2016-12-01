@@ -10,7 +10,7 @@ TrabalhoG2\Animal;
 /**
  * Classe model, realizar interações com o banco de dados.
  */
-class ModelAnimal {
+class ModelAnimalData {
 
     //public static $instance;
     private $conexao;
@@ -34,10 +34,12 @@ class ModelAnimal {
     public function gravarAnimal(Animal $animal) {
         try {
 
-            if (isset($animal->getId())
+            if ($animal->getId()){
                 return $this->editar($animal);
-            else
+            }
+            else{
                 return $this->inserir($animal);
+            }
             
         } catch (Exception $e) {
             // Retorna se algum erro ocorreu.
@@ -71,7 +73,7 @@ class ModelAnimal {
                 $e->getCode() . " Mensagem: " . $e->getMessage());
         }
     }
-//id_raca, id_usuario, nome, idade, peso, sexo, foto, informacoes, adotado
+    //id_raca, id_usuario, nome, idade, peso, sexo, foto, informacoes, adotado
     public function editar(Animal $animal) {
         try {
             $sql = "UPDATE animais set
@@ -123,29 +125,43 @@ class ModelAnimal {
         }
     }
 
-    public function buscarPorId($id) {
+    public function buscarPorId($id, $idUser) {
         try {
-            $sql = "SELECT * FROM animais WHERE id = :id";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->bindValue(":id", $id);
-            $p_sql->execute();
-            return $this->populaAnimal($p_sql->fetch(PDO::FETCH_ASSOC));
+            $sql = "
+            SELECT
+                *
+            FROM
+                animais 
+            WHERE id = :id AND id_usuario = :id_usuario";
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+ 
+            $preparaSQL->bindValue(":id", $id, PDO::PARAM_INT);
+             $preparaSQL->bindValue(":id_usuario", $idUser, PDO::PARAM_INT);
+            $preparaSQL->execute();
+            return $this->populaAnimal($preparaSQL->fetch(PDO::FETCH_ASSOC));
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+             print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
-    public function buscarTodos() {
+    public function buscarTodos($idUsuario = false) {
         try {
-            $sql = "SELECT * FROM animais ";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->execute();
+            if($idUsuario == false){
+                $sql = "SELECT * FROM animais ";
+            }else{
+                $sql = "SELECT * FROM animais WHERE id_usuario = :id_usuario";
+            }
+
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->bindValue(":id_usuario", $idUsuario, PDO::PARAM_INT);
+            
+            $preparaSQL->execute();
             
             $lista = array();
-            while($row = $p_sql->fetch(PDO::FETCH_ASSOC)) {
+            while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
                 array_push($lista, $this->populaAnimal($row));
             }
 
@@ -162,12 +178,15 @@ class ModelAnimal {
     {
         $animal = new Animal;
         $animal->setId($registro['id']);
+        $animal->setIdRaca($registro['id_raca']);
+        $animal->setIdUsuario($registro['id_usuario']);
         $animal->setNome($registro['nome']);
-        $animal->setEmail($registro['email']);
-        $animal->setSenha($registro['senha']);
-        $animal->setTelefone($registro['telefone']);
-        $animal->setEnderecoCompleto($registro['endereco_completo']);
-        $animal->setAdmin($registro['admin']);
+        $animal->setIdade($registro['idade']);
+        $animal->setPeso($registro['peso']);
+        $animal->setSexo($registro['sexo']);
+        $animal->setFoto($registro['foto']);
+        $animal->setInformacoes($registro['informacoes']);
+        $animal->setAdotado($registro['adotado']);
         return $animal;
     }
 
