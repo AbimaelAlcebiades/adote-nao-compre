@@ -88,8 +88,6 @@ function atualizaUsuario(inputUserId, inputUserName, inputUserEmail, inputUserPh
     var form = inputUserName.closest("form.form-userdata");
     var botao = form.find(".enviar-formulario");
 
-    alert("Entrou no atualizaUsuario");
-
     // Dados.
     var data = {
         // Nome da função que será executada.
@@ -101,8 +99,6 @@ function atualizaUsuario(inputUserId, inputUserName, inputUserEmail, inputUserPh
         userAddress : inputUserAddress.val(),
         userPassword : inputUserPassword.val()
     };
-
-    alert("Entrou no atualizaUsuario-2");
 
     // Url da requisição.
     var url = "../../../../ajax.php";
@@ -126,5 +122,4 @@ function atualizaUsuario(inputUserId, inputUserName, inputUserEmail, inputUserPh
         },
     });
 
-    alert("Entrou no atualizaUsuario-3");
 }
