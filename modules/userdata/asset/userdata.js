@@ -1,5 +1,7 @@
 $(document).ready(function(){
 
+
+
     // Evento de clique no botão "salvar".
     $("#btn_save").on("click", function(e){
         // Evita comportamento padrão do botão.
@@ -12,7 +14,7 @@ $(document).ready(function(){
         var form = $(this).closest('form.module-userdata');
 
         // Verifica se todos os campos são válidos.
-        //VERIFICAR se as senhas estão iguais
+        // VERIFICAR se as senhas estão iguais
         if(
             validateEmptyField("nome_usuario") &&
             validateEmptyField("email_usuario") &&
@@ -22,19 +24,21 @@ $(document).ready(function(){
             validateEmptyField("senha2_usuario")
             ){
             // Atualiza user.
-        atualizaUsuario($("#id_usuario"), $("#nome_usuario"), $("#email_usuario"), $("#telefone_usuario"), $("#endereco_usuario"), $("#senha_usuario"));
-    }
-});
+            atualizaUsuario($("#id_usuario"), $("#nome_usuario"), $("#email_usuario"), $("#telefone_usuario"), $("#endereco_usuario"), $("#senha_usuario"));
+        }
+    });
 
         // Evento de clique no botão "cancelar".
         $(".btn-cancel").on("click", function(e){
         // Evita comportamento padrão do botão.
         e.preventDefault();
 
-        $("#nome_raca").val("");
-
-        $(".titulo_cadastro").removeClass("hidden");
-        $(".titulo_edicao").addClass('hidden');
+        $("#nome_usuario").val("");
+        $("#email_usuario").val("");
+        $("#telefone_usuario").val("");
+        $("#endereco_usuario").val("");
+        $("#senha_usuario").val("");
+        $("#senha2_usuario").val("");
 
         liberaTodosBotoes();
     });
@@ -47,12 +51,13 @@ $(document).ready(function(){
         }
     });
 
+});
 
-    /* Função que valida se um campo é vazio. */
-    function validateEmptyField(id){
+/* Função que valida se um campo é vazio. */
+function validateEmptyField(id){
 
-        var fieldValidate = $("#"+id);
-        var valueField = fieldValidate.val();
+    var fieldValidate = $("#"+id);
+    var valueField = fieldValidate.val();
 
     // Verificar se o campo não é vazio.
     if(valueField === ""){
@@ -82,28 +87,22 @@ function atualizaUsuario(inputUserId, inputUserName, inputUserEmail, inputUserPh
 
     var form = inputUserName.closest("form.form-userdata");
     var botao = form.find(".enviar-formulario");
-  //      var userId = 0;
-/*        var editMode = $(".enviar-formulario");
 
-        if(editMode.hasClass('user-edit')){
-            userId =  $("#nome_user").attr("data-id-user");
+    alert("Entrou no atualizaUsuario");
 
-
-            $(".titulo_cadastro").removeClass("hidden");
-            $(".titulo_edicao").addClass('hidden');
-        }
-        */
     // Dados.
     var data = {
         // Nome da função que será executada.
-        functionName : "updateUser",
-        id : inputUserId.val(),
-        name : inputBreedName.val(),
-        email : inputUserEmail.val(),
-        phone : inputUserPhone.val(),
-        address : inputUserAddress.val(),
-        password : inputUserPassword.val()
+        functionName : "registerUser",
+        userId : inputUserId.val(),
+        userName : inputUserName.val(),
+        userEmail : inputUserEmail.val(),
+        userPhone : inputUserPhone.val(),
+        userAddress : inputUserAddress.val(),
+        userPassword : inputUserPassword.val()
     };
+
+    alert("Entrou no atualizaUsuario-2");
 
     // Url da requisição.
     var url = "../../../../ajax.php";
@@ -119,8 +118,6 @@ function atualizaUsuario(inputUserId, inputUserName, inputUserEmail, inputUserPh
 
             console.log(result);
 
-            inputBreedName.val("");
-            inputBreedName.css('border',' 1px solid #ccc');
             botao.removeAttr("disabled");
             $("#glypcnnome_user").remove();
 
@@ -128,7 +125,6 @@ function atualizaUsuario(inputUserId, inputUserName, inputUserEmail, inputUserPh
 
         },
     });
-}
 
-
+    alert("Entrou no atualizaUsuario-3");
 }

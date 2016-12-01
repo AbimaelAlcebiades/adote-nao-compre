@@ -10,7 +10,7 @@ TrabalhoG2\Usuario;
 /**
  * Classe model, realizar interações com o banco de dados.
  */
-class ModelUsuario {
+class ModelUserData {
 
     //public static $instance;
     private $conexao;
@@ -28,16 +28,17 @@ class ModelUsuario {
 
     /**
      * Grava o registro na base independente se ele já existe ou ainda não;
-     * @param usuario $usuario Recebe um objeto Usuario e grava no banco de dados.
+     * @param Usuario $usuario Recebe um objeto Usuario e grava no banco de dados.
      * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
      */
     public function gravarUsuario(Usuario $usuario) {
         try {
 
-            if (isset($usuario->getId())
+            if ( !is_null($usuario->getId()) ){
                 return $this->editar($usuario);
-            else
+            } else {
                 return $this->inserir($usuario);
+            }
             
         } catch (Exception $e) {
             // Retorna se algum erro ocorreu.
@@ -45,35 +46,25 @@ class ModelUsuario {
         }
     }
 
-    /**
-     * Grava o registro na base independente se ele já existe ou ainda não;
-     * @param usuario $usuario Recebe um objeto Usuario e grava no banco de dados.
-     * @return boolean Retorna true se salvou o e false caso algum problema tenha ocorrido.
-     */
+
     public function inserir(Usuario $usuario) {
         try {
             $sql = "
-                INSERT INTO usuarios 
-                    ( nome, email, senha, telefone, endereco_completo, admin) 
-                VALUES  
-                    ( :nome, :email, :senha, :telefone, :endereco_completo, :admin)";
+            INSERT INTO usuarios 
+            ( nome) 
+            VALUES  
+            ( :nome)";
 
-            $p_sql = $this->conexao->getInstance()->prepare($sql);
 
-            $p_sql->bindValue(":nome", $usuario->getNome());
-            $p_sql->bindValue(":email", $usuario->getEmail());
-            $p_sql->bindValue(":senha", $usuario->getSenha());
-            $p_sql->bindValue(":telefone", $usuario->getTelefone());
-            $p_sql->bindValue(":endereco_completo", $usuario->getEnderecoCompleto());
-            $p_sql->bindValue(":admin", $usuario->getAdmin());
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
 
-            return $p_sql->execute();
+            $preparaSQL->bindValue(":nome", $usuario->getNome());
+
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . 
-                $e->getCode() . " Mensagem: " . $e->getMessage());
-            return "";
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
@@ -82,49 +73,49 @@ class ModelUsuario {
             $sql = "UPDATE usuarios set
             nome = :nome
             ,email = :email
-            ,senha = :senha
             ,telefone = :telefone
             ,endereco_completo = :endereco_completo
-            ,admin = :admin
+            ,senha = :senha
             WHERE id = :id";
 
-            $p_sql = Conexao::getInstance()->prepare($sql);
+            $preparaSQL = $this->conexao->prepare($sql);
 
-            $p_sql->bindValue(":nome", $usuario->getNome());
-            $p_sql->bindValue(":email", $usuario->getEmail());
-            $p_sql->bindValue(":senha", $usuario->getSenha());
-            $p_sql->bindValue(":telefone", $usuario->getTelefone());
-            $p_sql->bindValue(":endereco_completo", $usuario->getEnderecoCompleto());
-            $p_sql->bindValue(":admin", $usuario->getAdmin());
-            $p_sql->bindValue(":id", $usuario->getId());
+            //exit(var_dump((int)$usuario->getId()));
 
-            return $p_sql->execute();
+            $preparaSQL->bindValue(":id", (int)$usuario->getId(), PDO::PARAM_INT);
+            $preparaSQL->bindValue(":nome", $usuario->getNome(), PDO::PARAM_STR);
+            $preparaSQL->bindValue(":email", $usuario->getEmail(), PDO::PARAM_STR);
+            $preparaSQL->bindValue(":telefone", $usuario->getTelefone(), PDO::PARAM_STR);
+            $preparaSQL->bindValue(":endereco_completo", $usuario->getEnderecoCompleto(), PDO::PARAM_STR);
+            $preparaSQL->bindValue(":senha", md5($usuario->getSenha()), PDO::PARAM_STR);
+
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
     public function deletar($id) {
         try {
             $sql = "DELETE FROM usuarios WHERE id = :id";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->bindValue(":id", $id);
+            //$p_sql = Conexao::getInstance()->prepare($sql);
 
-            return $p_sql->execute();
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->bindValue(":id", $id);
+
+            return $preparaSQL->execute();
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+           print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
     public function buscarPorId($id) {
         try {
-            $sql = "SELECT * FROM usuarios WHERE id = :id";
+            $sql = "SELECT * FROM usuario WHERE id = :id";
             $p_sql = Conexao::getInstance()->prepare($sql);
             $p_sql->bindValue(":id", $id);
             $p_sql->execute();
@@ -137,23 +128,24 @@ class ModelUsuario {
         }
     }
 
-    public function buscarTodos() {
+    public function buscarTodas() {
         try {
             $sql = "SELECT * FROM usuarios ";
-            $p_sql = Conexao::getInstance()->prepare($sql);
-            $p_sql->execute();
+
+            // Trata consulta SQL.
+            $preparaSQL = $this->conexao->prepare($sql);
+            
+            $preparaSQL->execute();
             
             $lista = array();
-            while($row = $p_sql->fetch(PDO::FETCH_ASSOC)) {
+            while($row = $preparaSQL->fetch(PDO::FETCH_ASSOC)) {
                 array_push($lista, $this->populaUsuario($row));
             }
 
             return $lista;
         } catch (Exception $e) {
-            print "Ocorreu um erro ao tentar executar esta ação, foi gerado
-            um LOG do mesmo, tente novamente mais tarde.";
-            GeraLog::getInstance()->inserirLog("Erro: Código: " . $e->
-                getCode() . " Mensagem: " . $e->getMessage());
+            print "Ocorreu um erro ao tentar executar esta ação Erro: Código: "
+            . $e->getCode() . " Mensagem: " . $e->getMessage();
         }
     }
 
@@ -162,11 +154,6 @@ class ModelUsuario {
         $usuario = new Usuario;
         $usuario->setId($registro['id']);
         $usuario->setNome($registro['nome']);
-        $usuario->setEmail($registro['email']);
-        $usuario->setSenha($registro['senha']);
-        $usuario->setTelefone($registro['telefone']);
-        $usuario->setEnderecoCompleto($registro['endereco_completo']);
-        $usuario->setAdmin($registro['admin']);
         return $usuario;
     }
 
