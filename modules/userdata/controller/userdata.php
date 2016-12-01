@@ -180,6 +180,28 @@ class ControllerUserData implements Controller
 
     }
 
+    /**
+	 * Função que atualiza um usuario.
+	 * @param string $breedName Nome da raça.
+	 * @return boolean Retorna true se a raça foi criada ou false caso contrario.
+	 */
+	public function updateUser($id, $name, $email, $phone, $address, $password){
+		$retorno = array();
+
+		// Carrega model.
+		$modelUserData = self::loadModel("userdata", $this->modelUserData);
+
+		$user = new Usuario();
+		$user->setId($id);
+		$user->setNome($name);
+		$user->setEmail($email);
+		$user->setTelefone($phone);
+		$user->setEnderecoCompleto($address);
+		$user->setSenha($password);
+
+		$modelUserData->editar($user);
+	}
+
 }
 
 ?>
